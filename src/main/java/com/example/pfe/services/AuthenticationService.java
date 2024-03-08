@@ -10,11 +10,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -35,31 +37,40 @@ public class AuthenticationService {
     @Autowired
     private TokenService tokenService;
 
-    public ApplicationUser registerUser(String username, String password, String email){ // Ajout du paramètre email
+    public ApplicationUser registerUser(String username, String password, String email){
+        // Vérifie si l'email existe déjà
+        Optional<ApplicationUser> existingUser = userRepository.findByEmail(email);
+        if(existingUser.isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
 
         String encodedPassword = passwordEncoder.encode(password);
         Role userRole = roleRepository.findByAuthority("USER").get();
 
         Set<Role> authorities = new HashSet<>();
-
         authorities.add(userRole);
 
-        return userRepository.save(new ApplicationUser(0, username, encodedPassword, authorities, email)); // Ajout du paramètre email
+        return userRepository.save(new ApplicationUser(0, username, encodedPassword, authorities, email));
     }
 
-    public LoginResponseDTO loginUser(String username, String password){
+    public LoginResponseDTO loginUser(String email, String password) {
 
-        try{
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password)
+        ApplicationUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            // Construct authentication object
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    user.getUsername(), password,
+                    Set.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
 
-            String token = tokenService.generateJwt(auth);
-
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
-
-        } catch(AuthenticationException e){
-            return new LoginResponseDTO(null, "");
+            String token = tokenService.generateJwt(authentication);
+            return new LoginResponseDTO(user, token);
+        } else {
+            // Handle incorrect password
+            throw new IllegalArgumentException("Incorrect password");
         }
     }
+
 }

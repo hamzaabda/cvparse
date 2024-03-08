@@ -6,7 +6,10 @@ import com.example.pfe.models.LoginResponseDTO;
 import com.example.pfe.models.RegistrationDTO;
 import com.example.pfe.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -16,12 +19,18 @@ public class AuthentificationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ApplicationUser registerUser(@RequestBody RegistrationDTO body){
-        return authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail()); // Ajout du paramètre email
+    public ResponseEntity<?> registerUser(@RequestBody RegistrationDTO body){
+        try {
+            ApplicationUser user = authenticationService.registerUser(body.getUsername(), body.getPassword(), body.getEmail());
+            return ResponseEntity.ok(user);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody RegistrationDTO body){
-        return authenticationService.loginUser(body.getUsername(), body.getPassword());
+    public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody RegistrationDTO body){
+        LoginResponseDTO responseDTO = authenticationService.loginUser(body.getEmail(), body.getPassword());
+        return ResponseEntity.ok(responseDTO);
     }
 }

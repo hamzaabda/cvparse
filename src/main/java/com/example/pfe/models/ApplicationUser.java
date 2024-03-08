@@ -37,6 +37,7 @@ public class ApplicationUser implements UserDetails {
 
 
 
+
     // Getters and setters
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -56,6 +57,7 @@ public class ApplicationUser implements UserDetails {
         this.password = password;
         this.authorities = authorities;
         this.email = email; // Initialisation de l'email
+
     }
 
     public Integer getUserId() {
