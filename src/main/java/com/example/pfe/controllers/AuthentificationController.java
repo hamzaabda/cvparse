@@ -9,12 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin("*")
 public class AuthentificationController {
+
     @Autowired
     private AuthenticationService authenticationService;
 
@@ -33,4 +35,15 @@ public class AuthentificationController {
         LoginResponseDTO responseDTO = authenticationService.loginUser(body.getEmail(), body.getPassword());
         return ResponseEntity.ok(responseDTO);
     }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email) {
+        try {
+            authenticationService.resetPassword(email);
+            return ResponseEntity.ok("Password reset successful. Check your email for the new password.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

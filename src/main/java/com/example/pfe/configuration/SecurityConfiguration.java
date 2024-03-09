@@ -60,6 +60,8 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/admin/**").hasRole("ADMIN");
                     auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
+                    auth.requestMatchers("/forgotpassword/**").hasAnyRole("ADMIN", "USER");
+
                     auth.anyRequest().authenticated();
                 });
 

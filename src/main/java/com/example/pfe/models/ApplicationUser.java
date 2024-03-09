@@ -35,6 +35,8 @@ public class ApplicationUser implements UserDetails {
 
     private boolean enabled = true; // Ajout d'un champ pour le statut activé/désactivé
 
+    
+
 
 
 
