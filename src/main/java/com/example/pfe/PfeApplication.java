@@ -22,26 +22,24 @@ public class PfeApplication {
 
 	@Bean
 	public CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		return new CommandLineRunner() {
-			@Override
-			public void run(String... args) throws Exception {
-				if (roleRepository.findByAuthority("ADMIN").isPresent())
-					return;
-				Role adminRole = roleRepository.save(new Role("ADMIN"));
-				roleRepository.save(new Role("USER"));
+		return args -> {
+			if (roleRepository.findByAuthority("ADMIN").isPresent())
+				return;
+			Role adminRole = roleRepository.save(new Role("ADMIN"));
+			roleRepository.save(new Role("USER"));
 
-				Set<Role> roles = new HashSet<>();
-				roles.add(adminRole);
+			Set<Role> roles = new HashSet<>();
+			roles.add(adminRole);
 
-				// Create a user with necessary parameters including email
-				ApplicationUser admin = new ApplicationUser();
-				admin.setUsername("admin");
-				admin.setPassword(passwordEncoder.encode("password"));
-				admin.setAuthorities(roles);
-				admin.setEmail("admin@example.com");
+			// Create a user with necessary parameters including email
+			ApplicationUser admin = new ApplicationUser();
+			admin.setUsername("admin");
+			admin.setPassword(passwordEncoder.encode("password"));
+			admin.setAuthorities(roles);
+			admin.setEmail("admin@example.com");
 
-				userRepository.save(admin);
-			}
+			userRepository.save(admin);
 		};
 	}
+
 }

@@ -85,12 +85,18 @@ public class AuthenticationService {
             );
 
             String token = tokenService.generateJwt(authentication);
-            return new LoginResponseDTO(user, token);
+
+            // Get total user count
+            long totalUsersCount = getTotalUsersCount();
+
+            // Create response DTO with user, token, and total user count
+            return new LoginResponseDTO(user, token, totalUsersCount);
         } else {
             // Handle incorrect password
             throw new IllegalArgumentException("Incorrect password");
         }
     }
+
 
 
     @Transactional
@@ -142,7 +148,9 @@ public class AuthenticationService {
     }
 
 
-
+    public long getTotalUsersCount() {
+        return userRepository.count();
+    }
 
 
 }
