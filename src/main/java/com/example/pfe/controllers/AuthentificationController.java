@@ -31,15 +31,8 @@ public class AuthentificationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody RegistrationDTO body){
+    public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody RegistrationDTO body) {
         LoginResponseDTO responseDTO = authenticationService.loginUser(body.getEmail(), body.getPassword());
-
-        // Get total user count
-        long totalUsersCount = authenticationService.getTotalUsersCount();
-
-        // Set total users count in response DTO
-        responseDTO.setTotalUsersCount(totalUsersCount);
-
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -52,5 +45,12 @@ public class AuthentificationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/users/count")
+    public ResponseEntity<Long> getTotalUsersCount() {
+        long totalUsersCount = authenticationService.getTotalUsersCount();
+        return ResponseEntity.ok(totalUsersCount);
+    }
+
 
 }

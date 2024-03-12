@@ -19,27 +19,17 @@ public class PfeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PfeApplication.class, args);
 	}
-
 	@Bean
-	public CommandLineRunner run(RoleRepository roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner createRoles(RoleRepository roleRepository) {
 		return args -> {
-			if (roleRepository.findByAuthority("ADMIN").isPresent())
-				return;
-			Role adminRole = roleRepository.save(new Role("ADMIN"));
-			roleRepository.save(new Role("USER"));
-
-			Set<Role> roles = new HashSet<>();
-			roles.add(adminRole);
-
-			// Create a user with necessary parameters including email
-			ApplicationUser admin = new ApplicationUser();
-			admin.setUsername("admin");
-			admin.setPassword(passwordEncoder.encode("password"));
-			admin.setAuthorities(roles);
-			admin.setEmail("admin@example.com");
-
-			userRepository.save(admin);
+			if (!roleRepository.findByAuthority("ADMIN").isPresent()) {
+				roleRepository.save(new Role("ADMIN"));
+			}
+			if (!roleRepository.findByAuthority("USER").isPresent()) {
+				roleRepository.save(new Role("USER"));
+			}
 		};
 	}
+
 
 }

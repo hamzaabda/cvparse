@@ -5,21 +5,29 @@ import com.example.pfe.models.LoginResponseDTO;
 import com.example.pfe.models.Role;
 import com.example.pfe.repository.RoleRepository;
 import com.example.pfe.repository.UserRepository;
-import com.example.pfe.email.EmailService; // Importez votre classe EmailService
+import com.example.pfe.email.EmailService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+
 
 @Service
 @Transactional
@@ -40,32 +48,25 @@ public class AuthenticationService {
     private TokenService tokenService;
 
     @Autowired
-    private EmailService emailService; // Injectez  service EmailService
+    private EmailService emailService;
 
-
-
-
-
-    public ApplicationUser registerUser(String username, String password, String email){
+    public ApplicationUser registerUser(String username, String password, String email) {
         // Vérifie si l'email existe déjà
         Optional<ApplicationUser> existingUser = userRepository.findByEmail(email);
-        if(existingUser.isPresent()) {
+        if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Email already exists");
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        Role userRole = roleRepository.findByAuthority("USER").get();
+        Role userRole = roleRepository.findByAuthority("USER").orElseThrow(() -> new IllegalStateException("User role not found"));
 
-        Set<Role> authorities = new HashSet<>();
-        authorities.add(userRole);
-
-        ApplicationUser newUser = userRepository.save(new ApplicationUser(0, username, encodedPassword, authorities, email));
+        ApplicationUser newUser = userRepository.save(new ApplicationUser(0, username, encodedPassword, Collections.singleton(userRole), email));
 
         // Envoyer l'e-mail de confirmation d'inscription
         try {
             emailService.sendConfirmationEmail(email);
         } catch (MessagingException e) {
-            // Gérer l'échec de l'envoi de l'e-mail (enregistrez les erreurs dans les logs, par exemple)
+            // Gérer l'échec de l'envoi de l'e-mail
             e.printStackTrace();
         }
 
@@ -73,31 +74,28 @@ public class AuthenticationService {
     }
 
     public LoginResponseDTO loginUser(String email, String password) {
-
+        // Recherche de l'utilisateur par son email
         ApplicationUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // Vérification si le mot de passe correspond
         if (passwordEncoder.matches(password, user.getPassword())) {
-            // Construct authentication object
+            // Construction de l'objet d'authentification
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    user.getUsername(), password,
-                    Set.of(new SimpleGrantedAuthority("ROLE_USER"))
+                    user.getEmail(), password,
+                    Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"))
             );
 
+            // Génération du token JWT
             String token = tokenService.generateJwt(authentication);
 
-            // Get total user count
-            long totalUsersCount = getTotalUsersCount();
-
-            // Create response DTO with user, token, and total user count
-            return new LoginResponseDTO(user, token, totalUsersCount);
+            // Création du DTO de réponse avec l'utilisateur et le token
+            return new LoginResponseDTO(user, token);
         } else {
-            // Handle incorrect password
+            // Gérer le cas où le mot de passe est incorrect
             throw new IllegalArgumentException("Incorrect password");
         }
     }
-
-
 
     @Transactional
     public void resetPassword(String email) {
@@ -148,8 +146,56 @@ public class AuthenticationService {
     }
 
 
+
+    @PostConstruct
+    public void initDefaultAdmin() {
+        if (!roleRepository.findByAuthority("ADMIN").isPresent()) {
+            Role adminRole = roleRepository.save(new Role("ADMIN"));
+            roleRepository.save(new Role("USER"));
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(adminRole);
+
+            // Create a user with necessary parameters including email
+            ApplicationUser admin = new ApplicationUser();
+            admin.setUsername("admin");
+            admin.setPassword(passwordEncoder.encode("password"));
+            admin.setAuthorities(roles);
+            admin.setEmail("admin@example.com");
+
+            userRepository.save(admin);
+        }
+    }
+
     public long getTotalUsersCount() {
-        return userRepository.count();
+        // Retrieve the authentication object from the security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check if the authentication object contains the JWT token
+        if (authentication instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
+
+            // Extract the Jwt object from the authentication token
+            Jwt jwt = jwtAuthenticationToken.getToken();
+
+            // Extract necessary user information from the Jwt
+            String username = jwt.getSubject();
+
+            // Extract the isAdmin claim from the Jwt
+            Boolean isAdmin = jwt.getClaim("isAdmin");
+
+            // Check if the isAdmin claim exists and has a non-null value
+            if (isAdmin != null && isAdmin.booleanValue()) {
+                // Logic to get total users count
+                return userRepository.count();
+            } else {
+                // If the user is not admin, throw a RuntimeException indicating unauthorized access
+                throw new RuntimeException("User is not authorized to perform this action");
+            }
+        } else {
+            // If the authentication is not a JWT token, throw a RuntimeException indicating unauthorized access
+            throw new RuntimeException("User is not authorized to perform this action");
+        }
     }
 
 
