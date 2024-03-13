@@ -51,6 +51,14 @@ public class AuthentificationController {
         long totalUsersCount = authenticationService.getTotalUsersCount();
         return ResponseEntity.ok(totalUsersCount);
     }
-
+    @PostMapping("/admin/add")
+    public ResponseEntity<?> addAdmin(@Valid @RequestBody RegistrationDTO body) {
+        try {
+            authenticationService.addAdmin(body.getUsername(), body.getPassword(), body.getEmail());
+            return ResponseEntity.ok("Admin added successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 }

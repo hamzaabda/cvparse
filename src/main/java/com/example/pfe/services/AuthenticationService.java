@@ -22,16 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
-
+import java.util.*;
 
 @Service
 @Transactional
 public class AuthenticationService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -145,8 +141,6 @@ public class AuthenticationService {
         return password.toString();
     }
 
-
-
     @PostConstruct
     public void initDefaultAdmin() {
         if (!roleRepository.findByAuthority("ADMIN").isPresent()) {
@@ -196,6 +190,59 @@ public class AuthenticationService {
             // If the authentication is not a JWT token, throw a RuntimeException indicating unauthorized access
             throw new RuntimeException("User is not authorized to perform this action");
         }
+    }
+
+    public void addAdmin(String username, String password, String email) {
+        // Vérifie si l'email existe déjà
+        Optional<ApplicationUser> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        // Récupérer le rôle ADMIN
+        Role adminRole = roleRepository.findByAuthority("ADMIN")
+                .orElseThrow(() -> new IllegalStateException("Admin role not found"));
+
+        // Créer un nouvel administrateur avec le rôle ADMIN
+        ApplicationUser newAdmin = new ApplicationUser();
+        newAdmin.setUsername(username);
+        newAdmin.setPassword(passwordEncoder.encode(password));
+        newAdmin.setEmail(email);
+        newAdmin.setAuthorities(Collections.singleton(adminRole));
+
+        // Enregistrer le nouvel administrateur
+        userRepository.save(newAdmin);
+
+        // Envoyer un e-mail de confirmation
+        try {
+            emailService.sendConfirmationEmail(email);
+        } catch (MessagingException e) {
+            // Gérer l'échec de l'envoi de l'e-mail
+            e.printStackTrace();
+        }
+    }
+
+    public void updateAdmin(long adminId, String username, String password, String email) {
+        // Vérifie si l'administrateur existe
+        ApplicationUser admin = userRepository.findById((int) adminId)
+                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+
+        // Mettre à jour les informations de l'administrateur
+        admin.setUsername(username);
+        admin.setPassword(passwordEncoder.encode(password));
+        admin.setEmail(email);
+
+        // Enregistrer les modifications
+        userRepository.save(admin);
+    }
+
+    public void deleteAdmin(long adminId) {
+        // Vérifie si l'administrateur existe
+        ApplicationUser admin = userRepository.findById((int) adminId)
+                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+
+        // Supprimer l'administrateur
+        userRepository.delete(admin);
     }
 
 
