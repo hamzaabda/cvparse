@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.MessagingException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Transactional
@@ -93,6 +94,10 @@ public class AuthenticationService {
         }
     }
 
+    public void logout() {
+        SecurityContextHolder.clearContext();
+
+    }
     @Transactional
     public void resetPassword(String email) {
         ApplicationUser user = userRepository.findByEmail(email)
@@ -244,6 +249,29 @@ public class AuthenticationService {
         // Supprimer l'administrateur
         userRepository.delete(admin);
     }
+
+    public List<ApplicationUser> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    // Méthode pour compter le nombre de connexions réussies par jour
+    public long getSuccessfulLoginsCountByDay(Date date) {
+        // Implémentez cette méthode pour compter le nombre de connexions réussies pour une journée spécifique
+        return userRepository.countSuccessfulLoginsByDay(date);
+    }
+
+    // Méthode pour compter le nombre de réinitialisations de mot de passe par mois
+    public long getPasswordResetsCountByMonth(int year, int month) {
+        // Implémentez cette méthode pour compter le nombre de réinitialisations de mot de passe pour un mois spécifique
+        return userRepository.countPasswordResetsByMonth(year, month);
+    }
+
+    // Méthode pour compter le nombre d'utilisateurs inscrits par mois
+    public long getRegisteredUsersCountByMonth(int year, int month) {
+        // Implémentez cette méthode pour compter le nombre d'utilisateurs inscrits pour un mois spécifique
+        return userRepository.countRegisteredUsersByMonth(year, month);
+    }
+
 
 
 }
