@@ -1,24 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  userEmail: string; // Propriété pour stocker l'email de l'utilisateur
+  userEmail: string; // Propriété pour stocker l'e-mail de l'utilisateur
 
   constructor(private http: HttpClient) { }
 
   loginUser(data): Observable<any> {
-    // Code pour la connexion de l'utilisateur
-    // Une fois l'utilisateur connecté, vous pouvez définir son email
-    this.userEmail = data.email;
-    return this.http.post('http://localhost:8080/auth/login', data);
+    return this.http.post('http://localhost:8080/auth/login', data)
+      .pipe(
+        tap((response: any) => {
+          // Une fois l'utilisateur connecté avec succès, stockez le jeton dans le localStorage ou une autre méthode de stockage
+          localStorage.setItem('token', response.token);
+          this.userEmail = data.email; // Définir l'e-mail de l'utilisateur
+        })
+      );
   }
 
   resetPassword(email: string): Observable<string> {
     const resetPasswordUrl = `http://localhost:8080/auth/reset-password?email=${email}`;
     return this.http.post(resetPasswordUrl, {}, { responseType: 'text' });
+  }
+
+  checkEmailExists(email: string): Observable<boolean> {
+    const checkEmailUrl = `http://localhost:8080/auth/check-email?email=${email}`;
+    return this.http.get<boolean>(checkEmailUrl);
   }
 }
