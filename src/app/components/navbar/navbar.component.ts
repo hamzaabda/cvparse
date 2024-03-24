@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2'; // Import de Sweet Alert
 import { DeconnexionService } from './deconnexion.service';
 
 // Définition des routes
@@ -50,7 +51,18 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
-    // Appeler la méthode deconnexionService.deconnectAndRedirect sans argument
-    this.deconnexionService.deconnectAndRedirect();
+    Swal.fire({
+      title: 'Confirmation',
+      text: 'Voulez-vous vraiment vous déconnecter ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Déconnexion de l'utilisateur
+        this.deconnexionService.deconnectAndRedirect();
+      }
+    });
   }
 }
