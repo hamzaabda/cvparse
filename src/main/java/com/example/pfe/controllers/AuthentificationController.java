@@ -6,6 +6,8 @@ import com.example.pfe.models.LoginResponseDTO;
 import com.example.pfe.models.RegistrationDTO;
 import com.example.pfe.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -76,10 +78,11 @@ public class AuthentificationController {
     }
 
     @GetMapping("/logins/count")
-    public ResponseEntity<Long> getSuccessfulLoginsCountByDay(@RequestParam Date date) {
+    public ResponseEntity<Long> getSuccessfulLoginsCountByDay(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         long loginsCount = authenticationService.getSuccessfulLoginsCountByDay(date);
         return ResponseEntity.ok(loginsCount);
     }
+
 
     @GetMapping("/password-resets/count")
     public ResponseEntity<Long> getPasswordResetsCountByMonth(@RequestParam int year, @RequestParam int month) {
@@ -103,26 +106,17 @@ public class AuthentificationController {
         }
     }
 
-
-    @PutMapping("/admin/update/{adminId}")
-    public ResponseEntity<?> updateAdmin(@PathVariable long adminId, @Valid @RequestBody RegistrationDTO body) {
+    @PostMapping("/block/{adminId}")
+    public ResponseEntity<String> blockAdmin(@PathVariable Long adminId) {
         try {
-            authenticationService.updateAdmin(adminId, body.getUsername(), body.getPassword(), body.getEmail());
-            return ResponseEntity.ok(Map.of("message", "Admin updated successfully."));
+            authenticationService.blockAdmin(Math.toIntExact(adminId));
+            return ResponseEntity.ok("Admin blocked successfully");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/admin/delete/{adminId}")
-    public ResponseEntity<?> deleteAdmin(@PathVariable long adminId) {
-        try {
-            authenticationService.deleteAdmin(adminId);
-            return ResponseEntity.ok(Map.of("message", "Admin deleted successfully."));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
+
 
     @GetMapping("/admin")
     public ResponseEntity<?> getAllUsers() {
@@ -133,6 +127,17 @@ public class AuthentificationController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @PostMapping("/admin/search")
+    public ResponseEntity<List<ApplicationUser>> searchAdminsByUsernameOrEmail(@RequestBody String keyword) {
+        List<ApplicationUser> admins = authenticationService.searchAdminsByUsernameOrEmail(keyword);
+        return ResponseEntity.ok(admins);
+    }
+
+
+
+
+
 
 
 }

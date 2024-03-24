@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,6 +30,8 @@ public interface UserRepository extends JpaRepository<ApplicationUser, Integer> 
     // Définir une méthode pour compter les utilisateurs inscrits pour un mois spécifique
     @Query("SELECT COUNT(u) FROM ApplicationUser u WHERE YEAR(u.registrationDate) = :year AND MONTH(u.registrationDate) = :month")
     long countRegisteredUsersByMonth(@Param("year") int year, @Param("month") int month);
+
+    List<ApplicationUser> findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseAndAuthorities(String username, String email, Role role);
 }
 
 

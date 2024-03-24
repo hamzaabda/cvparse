@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/auth/**").permitAll();
                     auth.requestMatchers("/admin/**").hasRole("ADMIN");
                     auth.requestMatchers("/admin/userCount/**").hasRole("ADMIN");
+
                     auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
 
 

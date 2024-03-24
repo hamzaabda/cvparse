@@ -227,28 +227,30 @@ public class AuthenticationService {
         }
     }
 
-    public void updateAdmin(long adminId, String username, String password, String email) {
-        // Vérifie si l'administrateur existe
-        ApplicationUser admin = userRepository.findById((int) adminId)
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
+    public void blockAdmin(Integer adminId) {
+        // Convertir l'identifiant en Long
+        Long adminIdLong = adminId.longValue();
 
-        // Mettre à jour les informations de l'administrateur
-        admin.setUsername(username);
-        admin.setPassword(passwordEncoder.encode(password));
-        admin.setEmail(email);
+        // Trouver l'administrateur par son identifiant
+        Optional<ApplicationUser> adminOptional = userRepository.findById(Math.toIntExact(adminIdLong));
 
-        // Enregistrer les modifications
-        userRepository.save(admin);
+        // Vérifier si l'administrateur existe
+        if (adminOptional.isPresent()) {
+            ApplicationUser admin = adminOptional.get();
+
+            // Révoquer toutes les autorisations de l'administrateur
+            admin.setAuthorities(Collections.emptySet());
+
+            // Mettre à jour l'administrateur dans la base de données
+            userRepository.save(admin);
+
+            // Autres actions si nécessaire, comme envoyer un e-mail de notification, etc.
+        } else {
+            throw new IllegalArgumentException("Admin not found with ID: " + adminId);
+        }
     }
 
-    public void deleteAdmin(long adminId) {
-        // Vérifie si l'administrateur existe
-        ApplicationUser admin = userRepository.findById((int) adminId)
-                .orElseThrow(() -> new IllegalArgumentException("Admin not found"));
 
-        // Supprimer l'administrateur
-        userRepository.delete(admin);
-    }
 
     public List<ApplicationUser> getAllUsers() {
         return userRepository.findAll();
@@ -270,6 +272,14 @@ public class AuthenticationService {
     public long getRegisteredUsersCountByMonth(int year, int month) {
         // Implémentez cette méthode pour compter le nombre d'utilisateurs inscrits pour un mois spécifique
         return userRepository.countRegisteredUsersByMonth(year, month);
+    }
+
+
+    public List<ApplicationUser> searchAdminsByUsernameOrEmail(String keyword) {
+        // Recherche les administrateurs par nom d'utilisateur ou e-mail
+        return userRepository.findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseAndAuthorities(
+                keyword, keyword, roleRepository.findByAuthority("ADMIN").orElseThrow(() -> new IllegalStateException("Admin role not found"))
+        );
     }
 
 
