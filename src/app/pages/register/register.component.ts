@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RegisterService } from './register.service'; // Assurez-vous que le chemin vers votre service est correct
+import { RegisterService } from './register.service';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -7,24 +9,39 @@ import { RegisterService } from './register.service'; // Assurez-vous que le che
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  userData: any = {}; // Créez un objet pour stocker les données utilisateur
+  userData: any = {};
 
-  constructor(private registerService: RegisterService) { }
+  constructor(private registerService: RegisterService, private router: Router) { }
 
   ngOnInit() {
   }
 
   registerUser() {
-    // Appelez la méthode register du service et passez les données utilisateur
     this.registerService.register(this.userData).subscribe(
       (response) => {
         console.log('Inscription réussie :', response);
-        // Traitez la réponse ou redirigez l'utilisateur vers une autre page.
+        Swal.fire({
+          icon: 'success',
+          title: 'Inscription réussie',
+          text: 'Vous allez être redirigé vers la page de connexion',
+          timer: 3000,
+          timerProgressBar: true
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+            console.log('La notification a été fermée, redirection vers la page de connexion.');
+            this.redirectToLogin(); // Redirection vers la page de connexion
+          }
+        });
       },
       (error) => {
         console.error('Erreur lors de l\'inscription :', error);
-        // Gérez l'erreur (affichage d'un message d'erreur, etc.).
+        // Gérer l'erreur ici (affichage d'un message d'erreur, etc.).
       }
     );
+  }
+
+  redirectToLogin() {
+    console.log('Redirection vers la page de connexion...');
+    this.router.navigate(['/login']);
   }
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators'; // Import de l'opérateur tap
 
 @Injectable({
   providedIn: 'root'
@@ -11,32 +10,15 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  // Méthode pour obtenir le nombre d'inscriptions
-  getRegistrationsCount(token: string): Observable<number> {
-    const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get<number>(`${this.apiUrl}/registrations/count`, { headers })
-      .pipe(
-        tap(registrationsCount => console.log('Total registrations count:', registrationsCount))
-      );
+  createRecruiter(recruiterData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/recruiters`, recruiterData, { responseType: 'text' });
+  }
+  // Ajoutez d'autres fonctions pour la mise à jour et la suppression si nécessaire
+  updateRecruiter(recruiterId: number, recruiterData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/recruiters/${recruiterId}`, recruiterData);
   }
 
-  // Méthode pour obtenir le nombre de réinitialisations de mot de passe
-  getPasswordResetsCount(token: string): Observable<number> {
-    const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get<number>(`${this.apiUrl}/password-resets/count`, { headers })
-      .pipe(
-        tap(resetsCount => console.log('Total password resets count:', resetsCount))
-      );
+  deleteRecruiter(recruiterId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/recruiters/${recruiterId}`);
   }
-
-  // Méthode pour obtenir le nombre de connexions
-  getLoginsCount(token: string): Observable<number> {
-    const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get<number>(`${this.apiUrl}/login/count`, { headers })
-      .pipe(
-        tap(loginsCount => console.log('Total logins count:', loginsCount))
-      );
-  }
-
-  // Ajoutez ici d'autres méthodes si nécessaire pour interagir avec votre API d'authentification
 }

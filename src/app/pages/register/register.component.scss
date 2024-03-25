@@ -1,0 +1,19 @@
+/* Styles spécifiques au composant */
+.register-container {
+    margin-top: -8rem; /* Ajustement de la marge pour que le formulaire soit aligné avec le haut */
+  }
+  
+  /* Styles réutilisables pour les champs de saisie */
+  .input-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .input-group-text {
+    background-color: #fff; /* Couleur de fond des icônes */
+    color: #888; /* Couleur du texte des icônes */
+  }
+  
+  .form-control {
+    border-color: #ced4da; /* Couleur de la bordure des champs de saisie */
+  }
+  
