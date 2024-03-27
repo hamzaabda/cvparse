@@ -1,30 +1,58 @@
-<!-- tables.component.html -->
-<div>
+<div class="container">
   <!-- Formulaire pour créer un nouveau recruteur -->
-  <form (ngSubmit)="onCreateRecruiter()" class="recruiter-form">
+  <form (ngSubmit)="onCreateRecruiter()" class="recruiter-form" #recruiterForm="ngForm">
     <h2>Créer un recruteur</h2>
     <div class="form-group">
       <label for="username">Nom d'utilisateur:</label>
-      <input type="text" id="username" name="username" required [(ngModel)]="newRecruiter.username" class="form-control">
+      <input type="text" id="username" name="username" required minlength="3" [(ngModel)]="newRecruiter.username" class="form-control" #username="ngModel">
+      <div *ngIf="username.invalid && (username.dirty || username.touched)" class="text-danger">
+        <div *ngIf="username.errors?.required">Nom d'utilisateur requis.</div>
+        <div *ngIf="username.errors?.minlength">Le nom d'utilisateur doit contenir au moins 3 caractères.</div>
+      </div>
     </div>
     <div class="form-group">
       <label for="password">Mot de passe:</label>
-      <input type="password" id="password" name="password" required [(ngModel)]="newRecruiter.password" class="form-control">
+      <input type="password" id="password" name="password" required minlength="6" [(ngModel)]="newRecruiter.password" class="form-control" #password="ngModel">
+      <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger">
+        <div *ngIf="password.errors?.required">Mot de passe requis.</div>
+        <div *ngIf="password.errors?.minlength">Le mot de passe doit contenir au moins 6 caractères.</div>
+      </div>
     </div>
     <div class="form-group">
       <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required [(ngModel)]="newRecruiter.email" class="form-control">
+      <input type="email" id="email" name="email" required [(ngModel)]="newRecruiter.email" class="form-control" #email="ngModel">
+      <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger">
+        <div *ngIf="email.errors?.required">Email requis.</div>
+        <div *ngIf="email.errors?.email">Format d'email invalide.</div>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary">Créer</button>
+    <button type="submit" class="btn btn-primary" [disabled]="recruiterForm.invalid">Créer</button>
   </form>
+
+  <!-- Champ de recherche par e-mail -->
+  <div class="form-group mt-3">
+    <label for="searchEmail">Rechercher par e-mail:</label>
+    <input type="text" id="searchEmail" name="searchEmail" [(ngModel)]="searchEmail" class="form-control" (input)="onSearch()">
+  </div>
 
   <!-- Liste des recruteurs existants -->
   <h2>Liste des recruteurs</h2>
-  <ul>
-    <li *ngFor="let recruiter of recruiters">
-      {{ recruiter.username }} - {{ recruiter.email }}
-      <button (click)="onUpdateRecruiter(recruiter.id)" class="btn btn-sm btn-info">Modifier</button>
-      <button (click)="onDeleteRecruiter(recruiter.id)" class="btn btn-sm btn-danger">Supprimer</button>
-    </li>
-  </ul>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nom d'utilisateur</th>
+        <th>Email</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let recruiter of filteredRecruiters">
+        <td>{{ recruiter.username }}</td>
+        <td>{{ recruiter.email }}</td>
+        <td>
+          <!-- Actions here -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

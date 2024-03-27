@@ -21,4 +21,18 @@ export class AuthService {
   deleteRecruiter(recruiterId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/recruiters/${recruiterId}`);
   }
+  getAllRecruiters(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/recruiters`);
+  }
+  getRecruiterById(recruiterId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/recruiters/${recruiterId}`);
+  }
+
+  getRecruiter(recruiterId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/recruiters/${recruiterId}`);
+  }
+   // Nouvelle méthode pour rechercher un recruteur par e-mail
+   searchRecruiterByEmail(email: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/recruiters/search?email=${email}`);
+  }
 }
