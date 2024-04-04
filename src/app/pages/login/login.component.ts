@@ -27,10 +27,16 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: this.email,
       password: this.password
     };
-
+  
     this.authService.loginUser(userData).subscribe(
       (response) => {
         console.log('Connexion réussie :', response);
+        // Affichage du message de succès
+        Swal.fire({
+          icon: 'success',
+          title: 'Connexion réussie',
+          text: 'Vous êtes connecté avec succès!'
+        });
         // Redirection vers le tableau de bord après une connexion réussie
         this.router.navigate(['/dashboard']);
       },
@@ -52,6 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       }
     );
   }
+  
 
 
   

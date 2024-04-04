@@ -1,103 +1,83 @@
-<div class="header bg-gradient-danger pb-8 pt-5 pt-md-8">
-  <div class="container-fluid">
-    <div class="header-body">
-      <!-- Card stats -->
-      <div class="row">
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Traffic</h5>
-                  <span class="h2 font-weight-bold mb-0">350,897</span>
-                </div>
-                <div class="col-auto">
-                  <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
-                    <i class="fas fa-chart-bar"></i>
-                  </div>
-                </div>
-              </div>
-              <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-success mr-2"><i class="fa fa-arrow-up"></i> 3.48%</span>
-                <span class="text-nowrap">Since last month</span>
-              </p>
-            </div>
-          </div>
+<div class="row">
+  <div class="col-md-6">
+    <div id="map-canvas" data-lat="latitude" data-lng="longitude" style="height: 400px;"></div>
+  </div>
+  <div class="col-md-6">
+    <div>
+      <h3>Liste des offres de stage</h3>
+      <ul class="list-group">
+        <li *ngFor="let offre of offresStage" class="list-group-item">
+          <h4>{{ offre.titre }}</h4>
+          <p>Description: {{ offre.description }}</p>
+          <p>Compétences requises: {{ offre.competencesRequises }}</p>
+          <p>Localisation: {{ offre.localisation }}</p>
+          <p>Niveau d'éducation requis: {{ offre.niveauEducationRequis }}</p>
+          <p>Type de stage: {{ offre.typeStage }}</p>
+          <p>Date de début: {{ offre.dateDebut }}</p>
+          <button (click)="selectionnerOffre(offre)" class="btn btn-primary">Sélectionner</button>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>Créer une nouvelle offre de stage</h3>
+      <form (submit)="creerOffreStage()">
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.titre" placeholder="Titre" class="form-control" required>
         </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">New users</h5>
-                  <span class="h2 font-weight-bold mb-0">2,356</span>
-                </div>
-                <div class="col-auto">
-                  <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
-                    <i class="fas fa-chart-pie"></i>
-                  </div>
-                </div>
-              </div>
-              <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-danger mr-2"><i class="fas fa-arrow-down"></i> 3.48%</span>
-                <span class="text-nowrap">Since last week</span>
-              </p>
-            </div>
-          </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.description" placeholder="Description" class="form-control" required>
         </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Sales</h5>
-                  <span class="h2 font-weight-bold mb-0">924</span>
-                </div>
-                <div class="col-auto">
-                  <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
-                    <i class="fas fa-users"></i>
-                  </div>
-                </div>
-              </div>
-              <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-warning mr-2"><i class="fas fa-arrow-down"></i> 1.10%</span>
-                <span class="text-nowrap">Since yesterday</span>
-              </p>
-            </div>
-          </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.competencesRequises" placeholder="Compétences requises" class="form-control" required>
         </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Performance</h5>
-                  <span class="h2 font-weight-bold mb-0">49,65%</span>
-                </div>
-                <div class="col-auto">
-                  <div class="icon icon-shape bg-info text-white rounded-circle shadow">
-                    <i class="fas fa-percent"></i>
-                  </div>
-                </div>
-              </div>
-              <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-success mr-2"><i class="fas fa-arrow-up"></i> 12%</span>
-                <span class="text-nowrap">Since last month</span>
-              </p>
-            </div>
-          </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.localisation" placeholder="Localisation" class="form-control" required>
         </div>
-      </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.niveauEducationRequis" placeholder="Niveau d'éducation requis" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="nouvelleOffre.typeStage" placeholder="Type de stage" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <input type="date" [(ngModel)]="nouvelleOffre.dateDebut" placeholder="Date de début" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Créer</button>
+      </form>
     </div>
   </div>
 </div>
-<!-- Page content -->
-<div class="container-fluid mt--7">
-  <div class="row">
-    <div class="col">
-      <div class="card shadow border-0">
-        <div id="map-canvas" class="map-canvas" data-lat="40.748817" data-lng="-73.985428" style="height: 600px;"></div>
-      </div>
+
+<div *ngIf="offreSelectionnee" class="mt-4">
+  <h3>Modifier l'offre de stage sélectionnée</h3>
+  <form (submit)="modifierOffreStage()">
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.titre" placeholder="Titre" class="form-control" required>
     </div>
-  </div>
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.description" placeholder="Description" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.competencesRequises" placeholder="Compétences requises" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.localisation" placeholder="Localisation" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.niveauEducationRequis" placeholder="Niveau d'éducation requis" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <input type="text" [(ngModel)]="offreModifiee.typeStage" placeholder="Type de stage" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <input type="date" [(ngModel)]="offreModifiee.dateDebut" placeholder="Date de début" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Modifier</button>
+  </form>
+</div>
+
+<div *ngIf="offreSelectionnee" class="mt-4">
+  <h3>Supprimer l'offre de stage sélectionnée</h3>
+  <button (click)="supprimerOffreStage(offreSelectionnee.id)" class="btn btn-danger">Supprimer</button>
 </div>

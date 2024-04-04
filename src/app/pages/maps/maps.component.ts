@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-declare const google: any;
+import { AuthService } from '../maps/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-maps',
@@ -8,49 +9,90 @@ declare const google: any;
 })
 export class MapsComponent implements OnInit {
 
-  constructor() { }
+  offresStage: any[] = [];
+  nouvelleOffre: any = {};
+  offreSelectionnee: any = {};
+  offreModifiee: any = {};
+
+  constructor(private authService: AuthService) { }
 
   ngOnInit() {
-    let map = document.getElementById('map-canvas');
-    let lat = map.getAttribute('data-lat');
-    let lng = map.getAttribute('data-lng');
+    this.chargerOffresStage();
+    this.initMap();
+  }
 
-    var myLatlng = new google.maps.LatLng(lat, lng);
-    var mapOptions = {
-        zoom: 12,
-        scrollwheel: false,
-        center: myLatlng,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        styles: [
-          {"featureType":"administrative","elementType":"labels.text.fill","stylers":[{"color":"#444444"}]},
-          {"featureType":"landscape","elementType":"all","stylers":[{"color":"#f2f2f2"}]},
-          {"featureType":"poi","elementType":"all","stylers":[{"visibility":"off"}]},
-          {"featureType":"road","elementType":"all","stylers":[{"saturation":-100},{"lightness":45}]},
-          {"featureType":"road.highway","elementType":"all","stylers":[{"visibility":"simplified"}]},
-          {"featureType":"road.arterial","elementType":"labels.icon","stylers":[{"visibility":"off"}]},
-          {"featureType":"transit","elementType":"all","stylers":[{"visibility":"off"}]},
-          {"featureType":"water","elementType":"all","stylers":[{"color":'#5e72e4'},{"visibility":"on"}]}]
-    }
+  chargerOffresStage() {
+    this.authService.getAllOffres().subscribe(
+      offres => {
+        this.offresStage = offres;
+      },
+      error => {
+        console.log('Erreur lors du chargement des offres de stage : ', error);
+        Swal.fire('Erreur', 'Une erreur est survenue lors du chargement des offres de stage.', 'error');
+      }
+    );
+  }
 
-    map = new google.maps.Map(map, mapOptions);
+  creerOffreStage() {
+    this.authService.createOffre(this.nouvelleOffre).subscribe(
+      response => {
+        this.nouvelleOffre = {};
+        this.chargerOffresStage(); // Rafraîchir la liste des offres après création
+        Swal.fire('Succès', 'L\'offre de stage a été créée avec succès.', 'success');
+      },
+      error => {
+        console.log('Erreur lors de la création de l\'offre de stage : ', error);
+        Swal.fire('Erreur', 'Une erreur est survenue lors de la création de l\'offre de stage.', 'error');
+      }
+    );
+  }
 
-    var marker = new google.maps.Marker({
-        position: myLatlng,
-        map: map,
-        animation: google.maps.Animation.DROP,
-        title: 'Hello World!'
-    });
+  modifierOffreStage() {
+    this.authService.updateOffre(this.offreSelectionnee.id, this.offreModifiee).subscribe(
+      response => {
+        this.offreSelectionnee = {};
+        this.offreModifiee = {};
+        this.chargerOffresStage(); // Rafraîchir la liste des offres après modification
+        Swal.fire('Succès', 'L\'offre de stage a été modifiée avec succès.', 'success');
+      },
+      error => {
+        console.log('Erreur lors de la modification de l\'offre de stage : ', error);
+        Swal.fire('Erreur', 'Une erreur est survenue lors de la modification de l\'offre de stage.', 'error');
+      }
+    );
+  }
 
-    var contentString = '<div class="info-window-content"><h2>Argon Dashboard</h2>' +
-        '<p>A beautiful Dashboard for Bootstrap 4. It is Free and Open Source.</p></div>';
+  supprimerOffreStage(id: number) {
+    this.authService.deleteOffre(id).subscribe(
+      response => {
+        this.chargerOffresStage(); // Rafraîchir la liste des offres après suppression
+        Swal.fire('Succès', 'L\'offre de stage a été supprimée avec succès.', 'success');
+      },
+      error => {
+        console.log('Erreur lors de la suppression de l\'offre de stage : ', error);
+        Swal.fire('Erreur', 'Une erreur est survenue lors de la suppression de l\'offre de stage.', 'error');
+      }
+    );
+  }
 
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
-    });
+  selectionnerOffre(offre: any) {
+  this.offreSelectionnee = offre;
+  // Initialisez seulement les champs nécessaires
+  this.offreModifiee = {
+    titre: offre.titre,
+    description: offre.description,
+    competencesRequises: offre.competencesRequises,
+    localisation: offre.localisation,
+    niveauEducationRequis: offre.niveauEducationRequis,
+    typeStage: offre.typeStage,
+    dateDebut: offre.dateDebut, // Assurez-vous de récupérer la date de début correcte depuis l'offre sélectionnée
+    // Ajoutez les autres champs de l'offre de stage ici
+  };
+}
 
-    google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(map, marker);
-    });
+
+  initMap() {
+    // Votre code Google Maps reste inchangé
   }
 
 }
