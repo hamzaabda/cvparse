@@ -1,10 +1,7 @@
 package com.example.pfe.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Recruiter {
@@ -18,7 +15,14 @@ public class Recruiter {
     private String email;
 
     // Constructeurs, getters et setters
+    @ManyToOne
+    private Role role;
 
+    // Autres attributs et méthodes
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
     public Long getId() {
         return id;
     }

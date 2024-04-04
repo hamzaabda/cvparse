@@ -15,6 +15,9 @@ public class LoginResponseDTO {
 
     }
 
+    public LoginResponseDTO(Recruiter recruiter, String token) {
+    }
+
 
     public ApplicationUser getUser(){
         return this.user;

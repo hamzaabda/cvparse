@@ -3,6 +3,7 @@ package com.example.pfe.services;
 import com.example.pfe.models.ApplicationUser;
 import com.example.pfe.models.LoginResponseDTO;
 import com.example.pfe.models.Role;
+import com.example.pfe.repository.RecruiterRepository;
 import com.example.pfe.repository.RoleRepository;
 import com.example.pfe.repository.UserRepository;
 import com.example.pfe.email.EmailService;
@@ -47,6 +48,9 @@ public class AuthenticationService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private RecruiterRepository recruiterRepository ;
+
     public ApplicationUser registerUser(String username, String password, String email) {
         // Vérifie si l'email existe déjà
         Optional<ApplicationUser> existingUser = userRepository.findByEmail(email);
@@ -74,6 +78,7 @@ public class AuthenticationService {
         // Recherche de l'utilisateur par son email
         ApplicationUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
 
         // Vérification si le mot de passe correspond
         if (passwordEncoder.matches(password, user.getPassword())) {
