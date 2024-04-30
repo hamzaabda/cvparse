@@ -1,9 +1,8 @@
 package com.example.pfe.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity(name = "OffreStage")
 public class OffreStage {
@@ -20,7 +19,11 @@ public class OffreStage {
     private String typeStage; // Renommé de typeContrat
     private String dateDebut;
 
-    // Getters and setters
+    @ElementCollection
+    private List<String> cvs; // Utilisation d'une liste pour stocker les noms de fichiers des CVs
+
+    // Getters and setters pour id et autres propriétés
+
     public Long getId() {
         return id;
     }
@@ -83,5 +86,13 @@ public class OffreStage {
 
     public void setDateDebut(String dateDebut) {
         this.dateDebut = dateDebut;
+    }
+
+    public List<String> getCvs() {
+        return cvs;
+    }
+
+    public void setCvs(List<String> cvs) {
+        this.cvs = cvs;
     }
 }
