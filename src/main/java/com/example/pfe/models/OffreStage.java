@@ -2,6 +2,7 @@ package com.example.pfe.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity(name = "OffreStage")
@@ -19,6 +20,8 @@ public class OffreStage {
     private String typeStage; // Renommé de typeContrat
     private String dateDebut;
 
+    private LocalDate dateExpiration;
+
     @ElementCollection
     private List<String> cvs; // Utilisation d'une liste pour stocker les noms de fichiers des CVs
 
@@ -31,6 +34,12 @@ public class OffreStage {
     public void setId(Long id) {
         this.id = id;
     }
+
+
+    public void setDateExpiration(LocalDate dateExpiration) {
+        this.dateExpiration = dateExpiration;
+    }
+
 
     public String getTitre() {
         return titre;
@@ -95,4 +104,5 @@ public class OffreStage {
     public void setCvs(List<String> cvs) {
         this.cvs = cvs;
     }
+
 }

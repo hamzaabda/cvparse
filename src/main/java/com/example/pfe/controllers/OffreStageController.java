@@ -33,9 +33,13 @@ public class OffreStageController {
         this.offreStageService = offreStageService;
     }
 
+    // Nouvelle méthode pour ajouter une nouvelle offre de stage
     @PostMapping("/offres-stage")
     public ResponseEntity<OffreStage> createOffreStage(@RequestBody OffreStage offreStage) {
+        // Appeler le service pour créer une nouvelle offre de stage
         OffreStage createdOffreStage = offreStageService.createOffreStage(offreStage);
+
+        // Retourner une réponse HTTP avec l'offre de stage créée
         return new ResponseEntity<>(createdOffreStage, HttpStatus.CREATED);
     }
 

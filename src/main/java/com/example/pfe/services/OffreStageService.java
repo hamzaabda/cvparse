@@ -6,6 +6,7 @@ import com.example.pfe.repository.OffreStageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +21,16 @@ public class OffreStageService {
     }
 
     public OffreStage createOffreStage(OffreStage offreStage) {
+        // ... (vérifications existantes)
+
+        // Calcul de la date d'expiration (un mois à partir de la date actuelle)
+        LocalDate now = LocalDate.now();
+        offreStage.setDateExpiration(now.plusMonths(1));
+
+        // Sauvegarde de l'offre
         return offreStageRepository.save(offreStage);
     }
+
 
     public List<OffreStage> getAllOffresStage() {
         return offreStageRepository.findAll();
