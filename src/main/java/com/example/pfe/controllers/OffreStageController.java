@@ -2,44 +2,52 @@ package com.example.pfe.controllers;
 
 import com.example.pfe.models.OffreStage;
 import com.example.pfe.services.OffreStageService;
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import com.example.pfe.email.EmailService;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.mail.MessagingException;
 
 @RestController
 @RequestMapping("/auth")
 public class OffreStageController {
 
     private final OffreStageService offreStageService;
+    private final Tesseract tesseract;
+    private static final Logger logger = LoggerFactory.getLogger(OffreStageController.class);
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     public OffreStageController(OffreStageService offreStageService) {
         this.offreStageService = offreStageService;
+        this.tesseract = new Tesseract();
+        // Configure le chemin vers le dossier "tessdata" de Tesseract
+        tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
     }
 
-    // Nouvelle méthode pour ajouter une nouvelle offre de stage
     @PostMapping("/offres-stage")
     public ResponseEntity<OffreStage> createOffreStage(@RequestBody OffreStage offreStage) {
-        // Appeler le service pour créer une nouvelle offre de stage
         OffreStage createdOffreStage = offreStageService.createOffreStage(offreStage);
-
-        // Retourner une réponse HTTP avec l'offre de stage créée
         return new ResponseEntity<>(createdOffreStage, HttpStatus.CREATED);
     }
 
@@ -64,11 +72,97 @@ public class OffreStageController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping("/upload-cv/{offreStageId}")
+    public ResponseEntity<String> uploadCVToOffreStage(
+            @RequestParam("file") MultipartFile file,
+            @PathVariable("offreStageId") Long offreStageId) {
+
+        if (file.isEmpty()) {
+            logger.warn("Le fichier est vide");
+            return new ResponseEntity<>("Le fichier est vide", HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            // Enregistrer temporairement le fichier sur le serveur
+            Path tempFilePath = Files.createTempFile("cv-", ".pdf");
+            file.transferTo(tempFilePath);
+            logger.info("Fichier téléchargé et enregistré temporairement à: {}", tempFilePath);
+
+            // Convertir le fichier PDF en images
+            List<BufferedImage> images = convertPdfToImages(tempFilePath);
+            logger.debug("Nombre d'images extraites du PDF: {}", images.size());
+
+            // Effectuer la reconnaissance OCR sur chaque image
+            StringBuilder extractedText = new StringBuilder();
+            for (BufferedImage image : images) {
+                String text = tesseract.doOCR(image);
+                logger.debug("Texte extrait de l'image : {}", text);
+                extractedText.append(text).append("\n");
+            }
+
+            // Supprimer le fichier temporaire
+            Files.delete(tempFilePath);
+            logger.info("Fichier temporaire supprimé");
+
+            // Récupérer l'offre de stage par son ID
+            Optional<OffreStage> offreStageOptional = offreStageService.getOffreStageById(offreStageId);
+            if (!offreStageOptional.isPresent()) {
+                return new ResponseEntity<>("Offre de stage non trouvée", HttpStatus.NOT_FOUND);
+            }
+
+            OffreStage offreStage = offreStageOptional.get();
+
+            // Extraire les compétences requises de l'offre de stage et les convertir en minuscules
+            List<String> competencesRequises = Arrays.asList(offreStage.getCompetencesRequises().toLowerCase().split(","));
+
+            // Extraire les compétences du CV
+            List<String> competencesCV = extractCompetencesFromText(extractedText.toString());
+
+            // Comparer les compétences requises et celles du CV
+            boolean isCompetenceMatch = compareCompetences(competencesRequises, competencesCV, extractedText.toString());
+
+            // Extraire les coordonnées du texte extrait du CV
+            Map<String, String> candidateContacts = extractCandidateContactsFromText(extractedText.toString());
+
+            // Service d'email
+            EmailService emailService = new EmailService();
+
+            if (isCompetenceMatch) {
+                // Récupérer l'email du candidat
+                String candidateEmail = candidateContacts.get("email");
+
+                if (candidateEmail != null) {
+                    // Envoyer un email automatique pour informer que le candidat est accepté dans le stage
+                    try {
+                        emailService.sendConfirmationEmail(candidateEmail);
+                        logger.info("Email de confirmation envoyé avec succès à " + candidateEmail);
+                    } catch (MessagingException e) {
+                        logger.error("Erreur lors de l'envoi de l'email : {}", e.getMessage());
+                        return new ResponseEntity<>("Erreur lors de l'envoi de l'email au candidat", HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                } else {
+                    logger.warn("Email du candidat non trouvé dans le CV");
+                    return new ResponseEntity<>("Email du candidat non trouvé dans le CV", HttpStatus.BAD_REQUEST);
+                }
+
+                return new ResponseEntity<>("Les compétences du candidat correspondent à l'offre de stage et apparaissent plus de 3 fois dans le CV. Un email a été envoyé au candidat pour informer qu'il est accepté dans le stage.", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Les compétences du candidat ne correspondent pas à l'offre de stage ou n'apparaissent pas suffisamment dans le CV", HttpStatus.BAD_REQUEST);
+            }
+
+        } catch (IOException | TesseractException e) {
+            logger.error("Erreur lors de l'extraction du texte : {}", e.getMessage());
+            return new ResponseEntity<>("Erreur lors de l'extraction du texte du CV", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     @DeleteMapping("/offres-stage/{id}")
     public ResponseEntity<Void> deleteOffreStage(@PathVariable("id") Long id) {
         offreStageService.deleteOffreStage(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
     @GetMapping("/search")
     public ResponseEntity<List<OffreStage>> searchOffresStageByTypeAndEducation(
             @RequestParam("typeStage") String typeStage,
@@ -77,106 +171,91 @@ public class OffreStageController {
         return new ResponseEntity<>(offresStage, HttpStatus.OK);
     }
 
+    // Méthode pour convertir un PDF en une liste d'images
+    private List<BufferedImage> convertPdfToImages(Path pdfPath) throws IOException {
+        List<BufferedImage> images = new ArrayList<>();
+        try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            int pageCount = document.getNumberOfPages();
 
-
-    // Endpoint pour postuler à une offre de stage et télécharger un CV
-    @PostMapping("/postuler/{idOffre}")
-    public ResponseEntity<String> postulerOffreStage(@PathVariable Long idOffre, @RequestParam("cv") List<MultipartFile> cvs) {
-        // Vérifiez si l'offre de stage existe
-        Optional<OffreStage> offreStageOptional = offreStageService.getOffreStageById(idOffre);
-        if (offreStageOptional.isPresent()) {
-            OffreStage offreStage = offreStageOptional.get();
-
-            // Traitez chaque CV individuellement
-            for (MultipartFile cv : cvs) {
-                // Vérifiez si le fichier CV est au format PDF
-                if (!cv.getContentType().equals("application/pdf")) {
-                    return ResponseEntity.badRequest().body("Le CV doit être au format PDF.");
-                }
-
-                try {
-                    // Sauvegarde du CV dans un dossier (ou tout autre système de stockage approprié)
-                    String fileName = StringUtils.cleanPath(cv.getOriginalFilename());
-                    Path path = Paths.get(fileName);
-                    Files.copy(cv.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-
-                    // Ajoutez le nom du fichier CV à la liste des CVs de l'offre de stage
-                    List<String> offreStageCvs = offreStage.getCvs();
-                    offreStageCvs.add(fileName); // Ajoutez le nom du fichier à la liste des CVs
-
-                    // Mettez à jour l'offre de stage avec la nouvelle liste de CVs
-                    offreStage.setCvs(offreStageCvs);
-
-                    // Enregistrez l'offre de stage mise à jour dans la base de données
-                    offreStageService.updateOffreStage(idOffre, offreStage);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'enregistrement du CV.");
-                }
+            // Parcourir les pages du document
+            for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                // Render la page à 300 DPI pour une meilleure qualité
+                BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
+                images.add(image);
             }
-
-            return ResponseEntity.ok("Candidature soumise avec succès pour l'offre de stage avec l'ID : " + idOffre);
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return images;
     }
 
-    // Endpoint pour télécharger tous les CVs associés à une offre de stage
-    @GetMapping("/offres-stage/{id}/download")
-    public ResponseEntity<Resource> downloadCvsForOffreStage(@PathVariable("id") Long id) {
-        // Vérifiez si l'offre de stage existe
-        Optional<OffreStage> offreStageOptional = offreStageService.getOffreStageById(id);
-        if (offreStageOptional.isPresent()) {
-            OffreStage offreStage = offreStageOptional.get();
+    // Méthode pour extraire les compétences du texte extrait du CV
+    private List<String> extractCompetencesFromText(String text) {
+        List<String> competences = new ArrayList<>();
+        // Mots-clés pour les compétences
+        String[] keywords = {"spring", "nodejs", "java", "python", "sql", "javascript", "c++", "c#", "ruby", "go"
+                , "asp.net", "angular", "react", "vue"
+        };
 
-            // Récupérez la liste des noms de fichiers des CVs associés à cette offre de stage
-            List<String> cvs = offreStage.getCvs();
+        // Convertir le texte en minuscules pour une recherche insensible à la casse
+        String lowerText = text.toLowerCase();
 
-            // Vérifiez s'il y a des CVs associés à cette offre de stage
-            if (cvs.isEmpty()) {
-                return ResponseEntity.noContent().build();
+        // Vérifier chaque mot-clé et l'ajouter à la liste si présent dans le texte
+        for (String keyword : keywords) {
+            // Utilisez une recherche d'index pour vérifier que le mot-clé est présent comme un mot entier
+            String regexPattern = "\\b" + keyword + "\\b";
+            Matcher matcher = Pattern.compile(regexPattern).matcher(lowerText);
+            while (matcher.find()) {
+                competences.add(keyword);
             }
-
-            // Créez une archive ZIP pour regrouper tous les CVs
-            Path zipFile = Paths.get("cvs.zip");
-            try {
-                // Créez une archive ZIP
-                Files.deleteIfExists(zipFile);
-                Files.createFile(zipFile);
-                java.util.zip.ZipOutputStream zipOutputStream = new java.util.zip.ZipOutputStream(Files.newOutputStream(zipFile));
-
-                // Ajoutez chaque CV à l'archive ZIP
-                for (String cvFileName : cvs) {
-                    Path cvPath = Paths.get(cvFileName);
-                    java.util.zip.ZipEntry zipEntry = new java.util.zip.ZipEntry(cvFileName);
-                    zipOutputStream.putNextEntry(zipEntry);
-                    Files.copy(cvPath, zipOutputStream);
-                }
-
-                zipOutputStream.close();
-
-                // Téléchargez l'archive ZIP
-                ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(zipFile));
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=cvs.zip");
-
-                return ResponseEntity.ok()
-                        .headers(headers)
-                        .contentLength(resource.contentLength())
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .body(resource);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return competences;
+    }
+
+    // Méthode pour comparer les compétences requises et celles du CV
+    private boolean compareCompetences(List<String> competencesRequises, List<String> competencesCV, String text) {
+        // Convertir les compétences requises en minuscules pour une comparaison insensible à la casse
+        Set<String> lowerCompetencesRequises = new HashSet<>();
+        for (String competence : competencesRequises) {
+            lowerCompetencesRequises.add(competence.toLowerCase());
+        }
+
+        // Convertir les compétences du CV en minuscules pour une comparaison insensible à la casse
+        Set<String> lowerCompetencesCV = new HashSet<>();
+        for (String competence : competencesCV) {
+            lowerCompetencesCV.add(competence.toLowerCase());
+        }
+
+        // Vérifier si toutes les compétences requises sont présentes dans les compétences du CV
+        return lowerCompetencesCV.containsAll(lowerCompetencesRequises);
+    }
+
+    // Méthode pour extraire les coordonnées (email et numéro de téléphone) du texte extrait du CV
+    private Map<String, String> extractCandidateContactsFromText(String text) {
+        Map<String, String> contacts = new HashMap<>();
+
+        // Regex pour extraire l'email
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+        Matcher emailMatcher = emailPattern.matcher(text);
+        if (emailMatcher.find()) {
+            contacts.put("email", emailMatcher.group());
+        }
+
+        // Liste d'expressions régulières pour différents formats de numéros de téléphone
+        List<Pattern> phonePatterns = Arrays.asList(
+                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\+216\\s?\\d{1,3}\\s?\\d{1,3}\\s?\\d{1,4}\\b"), // Format +216 xxxx xxxx ou variantes
+                Pattern.compile("\\+?\\d{2,3}?\\s?\\d{1,3}\\s?\\d{2,4}\\s?\\d{2,4}\\s?\\d{2,4}"), // Format international ou local
+                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\d{8}") // Format 8 chiffres (téléphone local)
+        );
+
+        // Essayer d'extraire le numéro de téléphone avec les différentes expressions régulières
+        for (Pattern phonePattern : phonePatterns) {
+            Matcher phoneMatcher = phonePattern.matcher(text);
+            if (phoneMatcher.find()) {
+                contacts.put("phone", phoneMatcher.group());
+                break; // Arrêter la recherche si un numéro de téléphone est trouvé
+            }
+        }
+
+        return contacts;
     }
 }
-
-
-
