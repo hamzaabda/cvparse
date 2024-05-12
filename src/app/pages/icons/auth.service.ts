@@ -33,4 +33,12 @@ export class AuthService {
   getAllOffresEmploi(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+
+
+
+
+
+
+  
 }

@@ -47,21 +47,7 @@ export class MapsComponent implements OnInit {
     );
   }
 
-  modifierOffreStage() {
-    this.authService.updateOffre(this.offreSelectionnee.id, this.offreModifiee).subscribe(
-      response => {
-        this.offreSelectionnee = {};
-        this.offreModifiee = {};
-        this.chargerOffresStage(); // Rafraîchir la liste des offres après modification
-        Swal.fire('Succès', 'L\'offre de stage a été modifiée avec succès.', 'success');
-      },
-      error => {
-        console.log('Erreur lors de la modification de l\'offre de stage : ', error);
-        Swal.fire('Erreur', 'Une erreur est survenue lors de la modification de l\'offre de stage.', 'error');
-      }
-    );
-  }
-
+ 
   supprimerOffreStage(id: number) {
     this.authService.deleteOffre(id).subscribe(
       response => {
@@ -76,23 +62,15 @@ export class MapsComponent implements OnInit {
   }
 
   selectionnerOffre(offre: any) {
-  this.offreSelectionnee = offre;
-  // Initialisez seulement les champs nécessaires
-  this.offreModifiee = {
-    titre: offre.titre,
-    description: offre.description,
-    competencesRequises: offre.competencesRequises,
-    localisation: offre.localisation,
-    niveauEducationRequis: offre.niveauEducationRequis,
-    typeStage: offre.typeStage,
-    dateDebut: offre.dateDebut, // Assurez-vous de récupérer la date de début correcte depuis l'offre sélectionnée
-    // Ajoutez les autres champs de l'offre de stage ici
-  };
-}
-
+    this.offreSelectionnee = offre;
+    // Initialisez seulement les champs nécessaires
+    this.offreModifiee = {
+      competencesRequises: offre.competencesRequises,
+      niveauEducationRequis: offre.niveauEducationRequis
+    };
+  }
 
   initMap() {
     // Votre code Google Maps reste inchangé
   }
-
 }

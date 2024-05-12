@@ -27,12 +27,7 @@ export class AuthService {
     return this.http.get(url);
   }
 
-  // Méthode pour mettre à jour une offre de stage
-  updateOffre(id: number, updatedOffreData: any): Observable<any> {
-    const url = `${this.baseUrl}/${id}`;
-    return this.http.put(url, updatedOffreData);
-  }
-
+ 
   // Méthode pour supprimer une offre de stage
   deleteOffre(id: number): Observable<any> {
     const url = `${this.baseUrl}/${id}`;

@@ -12,6 +12,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
+import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component';
+import { StageManagementComponent } from './pages/stage-management/stage-management.component';
 
 
 @NgModule({
@@ -27,7 +29,9 @@ import { ComponentsModule } from './components/components.module';
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    AuthLayoutComponent
+    AuthLayoutComponent,
+    EmploisManagementComponent,
+    StageManagementComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
