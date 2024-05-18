@@ -27,8 +27,5 @@ export class AuthService {
     return this.http.post(resetPasswordUrl, {}, { responseType: 'text' });
   }
 
-  checkEmailExists(email: string): Observable<boolean> {
-    const checkEmailUrl = `http://localhost:8080/auth/check-email?email=${email}`;
-    return this.http.get<boolean>(checkEmailUrl);
-  }
+ 
 }

@@ -24,7 +24,7 @@ export class RegisterComponent implements OnInit {
           icon: 'success',
           title: 'Inscription réussie',
           text: 'Vous allez être redirigé vers la page de connexion',
-          timer: 3000,
+          timer: 1,
           timerProgressBar: true
         }).then((result) => {
           if (result.dismiss === Swal.DismissReason.timer) {
