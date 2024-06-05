@@ -1,1 +1,15 @@
-<p>stage-management works!</p>
+<div class="container">
+  <h1>Liste des Offres de Stage</h1>
+  <div *ngFor="let offre of offresStage" class="offre-stage">
+    <h2>{{ offre.titre }}</h2>
+    <p>{{ offre.description }}</p>
+    <p><strong>Compétences Requises:</strong> {{ offre.competencesRequises }}</p>
+    <p><strong>Localisation:</strong> {{ offre.localisation }}</p>
+    <p><strong>Niveau d'Éducation Requis:</strong> {{ offre.niveauEducationRequis }}</p>
+    <p><strong>Type de Stage:</strong> {{ offre.typeStage }}</p>
+    <p><strong>Date de Début:</strong> {{ offre.dateDebut }}</p>
+    <p><strong>Date d'Expiration:</strong> {{ offre.dateExpiration }}</p>
+    <input type="file" (change)="onFileSelected($event)">
+    <button (click)="onPostuler(offre.id)">Postuler</button>
+  </div>
+</div>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StageService } from './stage.service';
+import { OffreStage } from './offre-stage.model';
 
 @Component({
   selector: 'app-stage-management',
@@ -7,9 +9,30 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StageManagementComponent implements OnInit {
 
-  constructor() { }
+  offresStage: OffreStage[] = [];
+  selectedFile: File | null = null;
+
+  constructor(private stageService: StageService) { }
 
   ngOnInit(): void {
+    this.stageService.getAllOffresStage().subscribe((data: OffreStage[]) => {
+      this.offresStage = data;
+    });
   }
 
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onPostuler(offreStageId: number): void {
+    if (this.selectedFile) {
+      this.stageService.uploadCV(this.selectedFile, offreStageId).subscribe(response => {
+        alert(response);
+      }, error => {
+        alert(error.error);
+      });
+    } else {
+      alert("Veuillez sélectionner un fichier.");
+    }
+  }
 }
