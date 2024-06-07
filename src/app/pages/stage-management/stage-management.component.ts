@@ -15,6 +15,10 @@ export class StageManagementComponent implements OnInit {
   constructor(private stageService: StageService) { }
 
   ngOnInit(): void {
+    this.loadOffresStage();
+  }
+
+  loadOffresStage(): void {
     this.stageService.getAllOffresStage().subscribe((data: OffreStage[]) => {
       this.offresStage = data;
     });
@@ -28,6 +32,8 @@ export class StageManagementComponent implements OnInit {
     if (this.selectedFile) {
       this.stageService.uploadCV(this.selectedFile, offreStageId).subscribe(response => {
         alert(response);
+        // Rafraîchir la liste des offres de stage après avoir postulé
+        this.loadOffresStage();
       }, error => {
         alert(error.error);
       });
