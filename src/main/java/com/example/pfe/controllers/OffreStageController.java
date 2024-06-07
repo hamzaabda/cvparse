@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import com.example.pfe.email.EmailService;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,6 +43,7 @@ public class OffreStageController {
     public OffreStageController(OffreStageService offreStageService) {
         this.offreStageService = offreStageService;
         this.tesseract = new Tesseract();
+
         // Configure le chemin vers le dossier "tessdata" de Tesseract
         tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
     }
@@ -112,29 +115,17 @@ public class OffreStageController {
 
             OffreStage offreStage = offreStageOptional.get();
 
-            // Extraire les compétences requises de l'offre de stage et les convertir en minuscules
-            List<String> competencesRequises = Arrays.asList(offreStage.getCompetencesRequises().toLowerCase().split(","));
-
-            // Extraire les compétences du CV
-            List<String> competencesCV = extractCompetencesFromText(extractedText.toString());
-
-            // Comparer les compétences requises et celles du CV
-            boolean isCompetenceMatch = compareCompetences(competencesRequises, competencesCV, extractedText.toString());
-
             // Extraire les coordonnées du texte extrait du CV
             Map<String, String> candidateContacts = extractCandidateContactsFromText(extractedText.toString());
 
-            // Service d'email
-            EmailService emailService = new EmailService();
-
-            if (isCompetenceMatch) {
-                // Récupérer l'email du candidat
+            // Envoyer email et enregistrer dans un fichier CSV si les compétences sont adaptées
+            if (compareCompetences(Arrays.asList(offreStage.getCompetencesRequises().toLowerCase().split(",\\s*")), extractCompetencesFromText(extractedText.toString()))) {
                 String candidateEmail = candidateContacts.get("email");
+                String candidatePhone = candidateContacts.get("phone");
 
                 if (candidateEmail != null) {
-                    // Envoyer un email automatique pour informer que le candidat est accepté dans le stage
                     try {
-                        emailService.sendConfirmationEmail(candidateEmail);
+                        emailService.sendAcceptanceOrRejectionEmail(candidateEmail, true);
                         logger.info("Email de confirmation envoyé avec succès à " + candidateEmail);
                     } catch (MessagingException e) {
                         logger.error("Erreur lors de l'envoi de l'email : {}", e.getMessage());
@@ -145,9 +136,18 @@ public class OffreStageController {
                     return new ResponseEntity<>("Email du candidat non trouvé dans le CV", HttpStatus.BAD_REQUEST);
                 }
 
-                return new ResponseEntity<>("Les compétences du candidat correspondent à l'offre de stage et apparaissent plus de 3 fois dans le CV. Un email a été envoyé au candidat pour informer qu'il est accepté dans le stage.", HttpStatus.OK);
+                // Enregistrer les informations dans un fichier CSV
+                String csvFilePath = "candidate_info.csv";
+                try {
+                    saveCandidateInfoToCSV(csvFilePath, candidateContacts);
+                } catch (IOException e) {
+                    logger.error("Erreur lors de l'enregistrement des informations candidat dans le fichier CSV : {}", e.getMessage());
+                    return new ResponseEntity<>("Erreur lors de l'enregistrement des informations candidat dans le fichier CSV", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                return new ResponseEntity<>("Les compétences du candidat correspondent à l'offre de stage. Un email a été envoyé au candidat pour informer qu'il est accepté dans le stage.", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Les compétences du candidat ne correspondent pas à l'offre de stage ou n'apparaissent pas suffisamment dans le CV", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Les compétences du candidat ne correspondent pas à l'offre de stage", HttpStatus.BAD_REQUEST);
             }
 
         } catch (IOException | TesseractException e) {
@@ -156,7 +156,22 @@ public class OffreStageController {
         }
     }
 
+    // Méthode pour sauvegarder les informations du candidat dans un fichier CSV
+    private void saveCandidateInfoToCSV(String csvFilePath, Map<String, String> candidateContacts) throws IOException {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"Nom", "Prenom", "Email", "Telephone"});
 
+        // Supposons que les noms et prénoms ne sont pas extraits directement ici
+        // Exemple basique pour illustrer l'écriture dans le CSV
+        data.add(new String[]{"", "", candidateContacts.get("email"), candidateContacts.get("phone")});
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(csvFilePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            for (String[] line : data) {
+                writer.write(String.join(",", line));
+                writer.newLine();
+            }
+        }
+    }
     @DeleteMapping("/offres-stage/{id}")
     public ResponseEntity<Void> deleteOffreStage(@PathVariable("id") Long id) {
         offreStageService.deleteOffreStage(id);
@@ -192,19 +207,14 @@ public class OffreStageController {
     private List<String> extractCompetencesFromText(String text) {
         List<String> competences = new ArrayList<>();
         // Mots-clés pour les compétences
-        String[] keywords = {"spring", "nodejs", "java", "python", "sql", "javascript", "c++", "c#", "ruby", "go"
-                , "asp.net", "angular", "react", "vue"
-        };
+        String[] keywords = {"spring", "nodejs", "java", "python", "sql", "javascript", "c++", "c#", "ruby", "go", "asp.net", "angular", "react", "vue"};
 
         // Convertir le texte en minuscules pour une recherche insensible à la casse
         String lowerText = text.toLowerCase();
 
         // Vérifier chaque mot-clé et l'ajouter à la liste si présent dans le texte
         for (String keyword : keywords) {
-            // Utilisez une recherche d'index pour vérifier que le mot-clé est présent comme un mot entier
-            String regexPattern = "\\b" + keyword + "\\b";
-            Matcher matcher = Pattern.compile(regexPattern).matcher(lowerText);
-            while (matcher.find()) {
+            if (lowerText.contains(keyword)) {
                 competences.add(keyword);
             }
         }
@@ -212,21 +222,9 @@ public class OffreStageController {
     }
 
     // Méthode pour comparer les compétences requises et celles du CV
-    private boolean compareCompetences(List<String> competencesRequises, List<String> competencesCV, String text) {
-        // Convertir les compétences requises en minuscules pour une comparaison insensible à la casse
-        Set<String> lowerCompetencesRequises = new HashSet<>();
-        for (String competence : competencesRequises) {
-            lowerCompetencesRequises.add(competence.toLowerCase());
-        }
-
-        // Convertir les compétences du CV en minuscules pour une comparaison insensible à la casse
-        Set<String> lowerCompetencesCV = new HashSet<>();
-        for (String competence : competencesCV) {
-            lowerCompetencesCV.add(competence.toLowerCase());
-        }
-
+    private boolean compareCompetences(List<String> competencesRequises, List<String> competencesCV) {
         // Vérifier si toutes les compétences requises sont présentes dans les compétences du CV
-        return lowerCompetencesCV.containsAll(lowerCompetencesRequises);
+        return competencesCV.containsAll(competencesRequises);
     }
 
     // Méthode pour extraire les coordonnées (email et numéro de téléphone) du texte extrait du CV

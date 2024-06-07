@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.*;
 import javax.mail.internet.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 @Service
@@ -73,4 +75,35 @@ public class EmailService {
             throw e;
         }
     }
+
+    public void sendAcceptanceOrRejectionEmail(String recipientEmail, boolean isAccepted) throws MessagingException {
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+
+            if (isAccepted) {
+                // Calculer la date limite pour le partage des documents (4 jours à partir de la date actuelle)
+                LocalDate deadlineDate = LocalDate.now().plusDays(4);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                String formattedDeadlineDate = deadlineDate.format(formatter);
+
+                message.setSubject("Acceptation de votre candidature au stage");
+                message.setText("Félicitations ! Votre candidature au stage a été acceptée.\n\n" +
+                        "Veuillez partager vos documents de stage avant le " + formattedDeadlineDate + ".\n\n" +
+                        "Merci de votre coopération.");
+            } else {
+                message.setSubject("Refus de votre candidature au stage");
+                message.setText("Nous regrettons de vous informer que votre candidature au stage a été refusée.");
+            }
+
+            Transport.send(message);
+            logger.info("E-mail de " + (isAccepted ? "acceptation" : "refus") + " envoyé avec succès à " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email : ", e);
+            throw e;
+        }
+    }
+
+
 }
