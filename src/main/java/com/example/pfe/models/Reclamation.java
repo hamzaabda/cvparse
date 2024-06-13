@@ -1,6 +1,5 @@
 package com.example.pfe.models;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +15,7 @@ public class Reclamation {
     private String titre;
     private String description;
     private String statut;
+    private String email;  // New email field
 
     // Getters and Setters
 
@@ -49,5 +49,13 @@ public class Reclamation {
 
     public void setStatut(String statut) {
         this.statut = statut;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
