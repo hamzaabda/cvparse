@@ -6,6 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { StageManagementComponent } from './pages/stage-management/stage-management.component'; // Chemin d'importation ajusté
+import { ReclamationComponent } from './pages/reclamation/reclamation.component'; // Importation de ReclamationComponent
+
 const routes: Routes = [
   {
     path: '',
@@ -15,6 +17,10 @@ const routes: Routes = [
   {
     path: 'stage-management',
     component: StageManagementComponent, // Composant StageManagementComponent
+  },
+  {
+    path: 'reclamation',
+    component: ReclamationComponent, // Composant ReclamationComponent
   },
   {
     path: '',

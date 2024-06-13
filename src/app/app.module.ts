@@ -14,6 +14,8 @@ import { AppRoutingModule } from './app.routing';
 import { ComponentsModule } from './components/components.module';
 import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component';
 import { StageManagementComponent } from './pages/stage-management/stage-management.component';
+import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component';
+import { ReclamationComponent } from './pages/reclamation/reclamation.component';
 
 
 @NgModule({
@@ -31,7 +33,9 @@ import { StageManagementComponent } from './pages/stage-management/stage-managem
     AdminLayoutComponent,
     AuthLayoutComponent,
     EmploisManagementComponent,
-    StageManagementComponent
+    StageManagementComponent,
+    ReclamationManagementComponent,
+    ReclamationComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

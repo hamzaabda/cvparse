@@ -1,0 +1,51 @@
+.reclamation-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reclamation-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .reclamation-list li {
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .reclamation-list li:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .reclamation-details, .reclamation-create {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reclamation-details h2, .reclamation-create h2 {
+    margin-top: 0;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  

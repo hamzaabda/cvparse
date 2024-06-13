@@ -1,0 +1,30 @@
+<div class="reclamation-container">
+    <h1>Reclamations</h1>
+    <ul class="reclamation-list">
+      <li *ngFor="let reclamation of reclamations" (click)="getReclamationById(reclamation.id)">
+        {{ reclamation.titre }} - {{ reclamation.statut }}
+      </li>
+    </ul>
+  
+    <div *ngIf="selectedReclamation" class="reclamation-details">
+      <h2>Details</h2>
+      <!-- Id is not displayed here -->
+      <p><strong>Titre:</strong> {{ selectedReclamation.titre }}</p>
+      <p><strong>Description:</strong> {{ selectedReclamation.description }}</p>
+      <p><strong>Statut:</strong> {{ selectedReclamation.statut }}</p>
+      <p><strong>Email:</strong> {{ selectedReclamation.email }}</p>
+      <button (click)="deleteReclamation(selectedReclamation.id)">Delete</button>
+    </div>
+  
+    <div class="reclamation-create">
+      <h2>Create Reclamation</h2>
+      <form (ngSubmit)="createReclamation(newReclamation)">
+        <input [(ngModel)]="newReclamation.titre" name="titre" placeholder="Titre" required />
+        <input [(ngModel)]="newReclamation.description" name="description" placeholder="Description" required />
+        <input [(ngModel)]="newReclamation.statut" name="statut" placeholder="Statut" required />
+        <input [(ngModel)]="newReclamation.email" name="email" type="email" placeholder="Email" required />
+        <button type="submit">Create</button>
+      </form>
+    </div>
+  </div>
+  
