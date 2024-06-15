@@ -1,0 +1,30 @@
+<div class="blog-container">
+    <h1>Blog Posts</h1>
+    <button (click)="createBlogPost()" class="btn btn-primary">Create Post</button>
+    <div *ngFor="let post of blogPosts" class="blog-post">
+      <h2>{{ post.title }}</h2>
+      <p>{{ post.content }}</p>
+      <div>
+        <button (click)="updateBlogPost(post)" class="btn btn-info">Edit</button>
+        <button (click)="deleteBlogPost(post)" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Form for creating a new blog post -->
+  <div class="create-post-form" *ngIf="showCreateForm">
+    <h2>Create New Blog Post</h2>
+    <form (ngSubmit)="submitCreatePostForm()" #createPostForm="ngForm">
+      <div class="form-group">
+        <label for="postTitle">Title:</label>
+        <input type="text" id="postTitle" name="postTitle" [(ngModel)]="newBlogPost.title" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="postContent">Content:</label>
+        <textarea id="postContent" name="postContent" [(ngModel)]="newBlogPost.content" class="form-control" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-success">Create</button>
+      <button type="button" (click)="cancelCreatePost()" class="btn btn-secondary">Cancel</button>
+    </form>
+  </div>
+  

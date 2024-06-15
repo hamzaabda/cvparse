@@ -1,0 +1,37 @@
+.blog-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .blog-post {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    padding: 10px;
+  }
+  
+  .blog-post h2 {
+    margin-top: 0;
+  }
+  
+  .blog-post p {
+    margin-bottom: 10px;
+  }
+  
+  .create-post-form {
+    margin-top: 20px;
+  }
+  
+  .create-post-form form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .create-post-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .create-post-form .btn {
+    margin-right: 10px;
+  }
+  

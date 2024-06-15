@@ -7,6 +7,8 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { StageManagementComponent } from './pages/stage-management/stage-management.component'; // Chemin d'importation ajusté
 import { ReclamationComponent } from './pages/reclamation/reclamation.component'; // Importation de ReclamationComponent
+import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component'; // Importation de ReclamationManagementComponent
+import { BlogComponent } from './pages/blog/blog.component'; // Importation de BlogComponent
 
 const routes: Routes = [
   {
@@ -21,6 +23,14 @@ const routes: Routes = [
   {
     path: 'reclamation',
     component: ReclamationComponent, // Composant ReclamationComponent
+  },
+  {
+    path: 'reclamation-management',
+    component: ReclamationManagementComponent, // Composant ReclamationManagementComponent
+  },
+  {
+    path: 'blog',
+    component: BlogComponent, // Composant BlogComponent
   },
   {
     path: '',

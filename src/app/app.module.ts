@@ -16,7 +16,7 @@ import { EmploisManagementComponent } from './pages/emplois-management/emplois-m
 import { StageManagementComponent } from './pages/stage-management/stage-management.component';
 import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component';
 import { ReclamationComponent } from './pages/reclamation/reclamation.component';
-
+import { BlogComponent } from './pages/blog/blog.component';
 
 @NgModule({
   imports: [
@@ -35,7 +35,8 @@ import { ReclamationComponent } from './pages/reclamation/reclamation.component'
     EmploisManagementComponent,
     StageManagementComponent,
     ReclamationManagementComponent,
-    ReclamationComponent
+    ReclamationComponent,
+    BlogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
