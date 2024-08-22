@@ -1,80 +1,56 @@
-<div class="row">
-  <div class="col-md-6">
-    <div id="map-canvas" data-lat="latitude" data-lng="longitude" style="height: 400px;"></div>
-  </div>
-  <div class="col-md-6">
-    <div>
-      <h3>Liste des offres de stage</h3>
-      <ul class="list-group">
-        <li *ngFor="let offre of offresStage" class="list-group-item">
-          <h4>{{ offre.titre }}</h4>
-          <p>Description: {{ offre.description }}</p>
-          <p>Compétences requises: {{ offre.competencesRequises }}</p>
-          <p>Localisation: {{ offre.localisation }}</p>
-          <p>Niveau d'éducation requis: {{ offre.niveauEducationRequis }}</p>
-          <p>Type de stage: {{ offre.typeStage }}</p>
-          <p>Date de début: {{ offre.dateDebut }}</p>
-          <button (click)="selectionnerOffre(offre)" class="btn btn-primary">Sélectionner</button>
-        </li>
-      </ul>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div id="map-canvas" data-lat="latitude" data-lng="longitude" class="map-container"></div>
     </div>
+    <div class="col-md-6">
+      <div class="offer-list">
+        <h3>Liste des offres de stage</h3>
+        <ul class="list-group">
+          <li *ngFor="let offre of offresStage" class="list-group-item">
+            <div class="offer-details">
+              <h4>{{ offre.titre }}</h4>
+              <p>Description: {{ offre.description }}</p>
+              <p>Compétences requises: {{ offre.competencesRequises }}</p>
+              <p>Localisation: {{ offre.localisation }}</p>
+              <p>Niveau d'éducation requis: {{ offre.niveauEducationRequis }}</p>
+              <p>Type de stage: {{ offre.typeStage }}</p>
+              <p>Date de début: {{ offre.dateDebut }}</p>
+            </div>
+            <button (click)="selectionnerOffre(offre)" class="btn btn-primary">Sélectionner</button>
+          </li>
+        </ul>
+      </div>
 
-    <div>
-      <h3>Créer une nouvelle offre de stage</h3>
-      <form (submit)="creerOffreStage()">
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.titre" placeholder="Titre" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.description" placeholder="Description" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.competencesRequises" placeholder="Compétences requises" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.localisation" placeholder="Localisation" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.niveauEducationRequis" placeholder="Niveau d'éducation requis" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="text" [(ngModel)]="nouvelleOffre.typeStage" placeholder="Type de stage" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <input type="date" [(ngModel)]="nouvelleOffre.dateDebut" placeholder="Date de début" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Créer</button>
-      </form>
+      <div class="new-offer">
+        <h3>Créer une nouvelle offre de stage</h3>
+        <form (submit)="creerOffreStage()">
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.titre" placeholder="Titre" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.description" placeholder="Description" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.competencesRequises" placeholder="Compétences requises" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.localisation" placeholder="Localisation" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.niveauEducationRequis" placeholder="Niveau d'éducation requis" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="text" [(ngModel)]="nouvelleOffre.typeStage" placeholder="Type de stage" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <input type="date" [(ngModel)]="nouvelleOffre.dateDebut" placeholder="Date de début" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Créer</button>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-
-<div *ngIf="offreSelectionnee" class="mt-4">
-  <h3>Modifier l'offre de stage sélectionnée</h3>
-  <form (submit)="modifierOffreStage()">
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.titre" placeholder="Titre" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.description" placeholder="Description" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.competencesRequises" placeholder="Compétences requises" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.localisation" placeholder="Localisation" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.niveauEducationRequis" placeholder="Niveau d'éducation requis" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="text" [(ngModel)]="offreModifiee.typeStage" placeholder="Type de stage" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <input type="date" [(ngModel)]="offreModifiee.dateDebut" placeholder="Date de début" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Modifier</button>
-  </form>
 </div>
 
 <div *ngIf="offreSelectionnee" class="mt-4">

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StageService } from './stage.service';
 import { OffreStage } from './offre-stage.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-stage-management',
@@ -30,15 +31,43 @@ export class StageManagementComponent implements OnInit {
 
   onPostuler(offreStageId: number): void {
     if (this.selectedFile) {
-      this.stageService.uploadCV(this.selectedFile, offreStageId).subscribe(response => {
-        alert(response);
-        // Rafraîchir la liste des offres de stage après avoir postulé
-        this.loadOffresStage();
-      }, error => {
-        alert(error.error);
+      this.stageService.uploadCV(this.selectedFile, offreStageId).subscribe({
+        next: (response) => {
+          Swal.fire({
+            title: 'Success',
+            text: 'Your application has been submitted successfully.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            // Hide the offer from the list
+            this.offresStage = this.offresStage.filter(offre => offre.id !== offreStageId);
+          });
+        },
+        error: (error) => {
+          if (error.status === 400 && error.error.includes('already applied')) {
+            Swal.fire({
+              title: 'Info',
+              text: 'You have already applied for this offer.',
+              icon: 'info',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            Swal.fire({
+              title: 'Error',
+              text: 'Failed to submit your application. Please try again.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        }
       });
     } else {
-      alert("Veuillez sélectionner un fichier.");
+      Swal.fire({
+        title: 'Warning',
+        text: 'Please select a file before submitting.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
     }
   }
 }

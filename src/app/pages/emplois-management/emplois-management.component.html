@@ -1,1 +1,19 @@
-<p>emplois-management works!</p>
+<div class="emplois-container">
+  <h2>Liste des Offres d'Emploi</h2>
+  <ul>
+    <li *ngFor="let offre of offresEmploi">
+      <h3>{{ offre.titre }}</h3>
+      <p><strong>Description:</strong> {{ offre.description }}</p>
+      <p><strong>Compétences Requises:</strong> {{ offre.competencesRequises }}</p>
+      <p><strong>Localisation:</strong> {{ offre.localisation }}</p>
+      <p><strong>Niveau d'Éducation Requis:</strong> {{ offre.niveauEducationRequis }}</p>
+      <p><strong>Expérience Requise:</strong> {{ offre.experienceRequise }} ans</p>
+      <p><strong>Type de Contrat:</strong> {{ offre.typeContrat }}</p>
+      <p><strong>Date de Début:</strong> {{ offre.dateDebut }}</p>
+      
+      <!-- Button to apply -->
+      <input type="file" #cvInput (change)="onFileSelected($event, offre.id)">
+      <button (click)="apply(offre.id, cvInput.files[0])">Postuler</button>
+    </li>
+  </ul>
+</div>

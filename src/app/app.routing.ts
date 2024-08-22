@@ -5,32 +5,37 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-import { StageManagementComponent } from './pages/stage-management/stage-management.component'; // Chemin d'importation ajusté
-import { ReclamationComponent } from './pages/reclamation/reclamation.component'; // Importation de ReclamationComponent
-import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component'; // Importation de ReclamationManagementComponent
-import { BlogComponent } from './pages/blog/blog.component'; // Importation de BlogComponent
+import { StageManagementComponent } from './pages/stage-management/stage-management.component';
+import { ReclamationComponent } from './pages/reclamation/reclamation.component';
+import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component';
+import { BlogComponent } from './pages/blog/blog.component';
+import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component'; // Importation de EmploisManagementComponent
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'stage-management', // Rediriger vers le composant StageManagementComponent par défaut
+    redirectTo: 'stage-management',
     pathMatch: 'full',
   },
   {
     path: 'stage-management',
-    component: StageManagementComponent, // Composant StageManagementComponent
+    component: StageManagementComponent,
   },
   {
     path: 'reclamation',
-    component: ReclamationComponent, // Composant ReclamationComponent
+    component: ReclamationComponent,
   },
   {
     path: 'reclamation-management',
-    component: ReclamationManagementComponent, // Composant ReclamationManagementComponent
+    component: ReclamationManagementComponent,
   },
   {
     path: 'blog',
-    component: BlogComponent, // Composant BlogComponent
+    component: BlogComponent,
+  },
+  {
+    path: 'emplois-management',
+    component: EmploisManagementComponent, // Composant EmploisManagementComponent
   },
   {
     path: '',
@@ -54,7 +59,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'stage-management' // Redirection par défaut vers le composant StageManagementComponent pour les routes inconnues
+    redirectTo: 'stage-management'
   }
 ];
 
@@ -66,7 +71,6 @@ const routes: Routes = [
       useHash: true
     })
   ],
-  exports: [
-  ],
+  exports: [],
 })
 export class AppRoutingModule { }
