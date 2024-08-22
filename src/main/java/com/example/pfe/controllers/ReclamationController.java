@@ -1,11 +1,14 @@
 package com.example.pfe.controllers;
 
+import com.example.pfe.email.EmailService;
 import com.example.pfe.models.Reclamation;
 import com.example.pfe.services.ReclamationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -14,6 +17,8 @@ public class ReclamationController {
 
     @Autowired
     private ReclamationService reclamationService;
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public List<Reclamation> getAllReclamations() {
@@ -44,4 +49,18 @@ public class ReclamationController {
         reclamationService.deleteReclamation(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/{id}/reply")
+    public ResponseEntity<String> replyToReclamation(@PathVariable Long id, @RequestBody String responseMessage) {
+        return reclamationService.getReclamationById(id).map(reclamation -> {
+            try {
+                emailService.sendReclamationResponse(reclamation.getEmail(), responseMessage);
+                return ResponseEntity.ok("Response sent successfully");
+            } catch (MessagingException e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send response");
+            }
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
 }

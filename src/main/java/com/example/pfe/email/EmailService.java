@@ -1,6 +1,5 @@
 package com.example.pfe.email;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ public class EmailService {
     private final String host = "smtp.gmail.com";
     private final String port = "587";
     private final String username = "hamzaabda09@gmail.com"; // Your email
-    private final String password = "hujh nrvz ngse qsvn"; // Your password
+    private final String password = "wugv muis tqaj zaar"; // Your password
 
     private final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final Session session;
@@ -105,5 +104,40 @@ public class EmailService {
         }
     }
 
+    public void sendInterviewInvitation(String recipientEmail, LocalDate interviewDate) throws MessagingException {
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject("Invitation à un entretien");
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String formattedDate = interviewDate.format(formatter);
+
+            message.setText("Nous vous invitons à un entretien le " + formattedDate + ".\n\n" +
+                    "Merci de confirmer votre présence.");
+
+            Transport.send(message);
+            logger.info("E-mail d'invitation à l'entretien envoyé avec succès à " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email d'invitation à l'entretien : ", e);
+            throw e;
+        }
+    }
+
+    public void sendReclamationResponse(String recipientEmail, String responseMessage) throws MessagingException {
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject("Réponse à votre réclamation");
+            message.setText(responseMessage);
+
+            Transport.send(message);
+            logger.info("E-mail de réponse à la réclamation envoyé avec succès à " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email de réponse à la réclamation : ", e);
+            throw e;
+        }
+    }
 }
