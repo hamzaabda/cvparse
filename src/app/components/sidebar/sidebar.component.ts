@@ -22,9 +22,13 @@ export const ROUTES: RouteInfo[] = [
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
+logout() {
+throw new Error('Method not implemented.');
+}
 
   public menuItems: any[];
   public isCollapsed = true;
+notifications: any;
 
   constructor(private router: Router) { }
 

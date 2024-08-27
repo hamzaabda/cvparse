@@ -1,0 +1,40 @@
+<div class="feedback-container">
+  <h2>Créer un Feedback</h2>
+  <form (ngSubmit)="createFeedback()" class="feedback-form">
+    <div class="form-group">
+      <label for="commentaire">Commentaire:</label>
+      <input
+        id="commentaire"
+        [(ngModel)]="feedback.commentaire"
+        name="commentaire"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="rating">Note:</label>
+      <input
+        id="rating"
+        [(ngModel)]="feedback.rating"
+        name="rating"
+        type="number"
+        min="1"
+        max="5"
+        class="form-control"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input
+        id="date"
+        [(ngModel)]="feedback.date"
+        name="date"
+        type="date"
+        class="form-control"
+        required
+      />
+    </div>
+    <button type="submit" class="btn-submit">Créer</button>
+  </form>
+</div>

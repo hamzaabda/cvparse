@@ -1,18 +1,32 @@
 #navbar-main {
-    .logout-link {
-      color: white;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-  
-      i {
-        font-size: 1.2rem;
-      }
-  
-      &:hover {
-        color: #f0ad4e; // Change color on hover (optional)
-      }
+  .logout-link {
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      color: #f0ad4e; // Change color on hover (optional)
+    }
+  }
+
+  .dropdown-menu {
+    max-width: 300px; // Optional: Set a max-width for dropdown
+  }
+
+  .dropdown-item {
+    cursor: pointer; // Ensure items are clickable
+    &:hover {
+      background-color: #f8f9fa; // Light background on hover
     }
   }
   
+  .badge-danger {
+    background-color: #f8f9fa; // Adjust badge color
+  }
+}

@@ -1,8 +1,9 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2'; // Import de Sweet Alert
+import Swal from 'sweetalert2'; // Import de SweetAlert2
 import { DeconnexionService } from './deconnexion.service';
+import { NotificationService } from './notification.service';
 
 // Définition des routes
 const ROUTES = [
@@ -21,19 +22,70 @@ export class NavbarComponent implements OnInit {
   public listTitles: any[];
   public location: Location;
   public userToken: string; // Ajoutez une propriété pour stocker le token de l'utilisateur
+  public notifications: any[] = []; // Array to store notifications
 
   constructor(
     location: Location,
     private element: ElementRef,
     private router: Router,
-    private deconnexionService: DeconnexionService
+    private deconnexionService: DeconnexionService,
+    private notificationService: NotificationService // Inject NotificationService
   ) {
     this.location = location;
   }
 
   ngOnInit() {
-    this.listTitles = ROUTES; // Utilisez ROUTES ici
-    this.userToken = localStorage.getItem('token'); // Récupérez le token de l'utilisateur depuis le stockage local
+    this.listTitles = ROUTES;
+    this.userToken = localStorage.getItem('token');
+    this.fetchNotifications(); // Fetch notifications on component initialization
+  }
+
+  fetchNotifications(): void {
+    this.notificationService.getNotifications().subscribe(
+      (data: any[]) => {
+        this.notifications = data;
+        Swal.fire({
+          title: 'Notifications Loaded',
+          text: 'Notifications have been successfully fetched.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      },
+      (error) => {
+        console.error('Error fetching notifications', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Unable to fetch notifications.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    );
+  }
+
+  markAsRead(notificationId: number): void {
+    this.notificationService.markAsRead(notificationId).subscribe(
+      () => {
+        this.notifications = this.notifications.filter(
+          (notification) => notification.id !== notificationId
+        );
+        Swal.fire({
+          title: 'Notification Read',
+          text: 'Notification has been marked as read.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+      },
+      (error) => {
+        console.error('Error marking notification as read', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Unable to mark notification as read.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
+    );
   }
 
   getTitle() {
@@ -60,7 +112,6 @@ export class NavbarComponent implements OnInit {
       cancelButtonText: 'Non'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Déconnexion de l'utilisateur
         this.deconnexionService.deconnectAndRedirect();
       }
     });

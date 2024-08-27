@@ -1,12 +1,31 @@
-<!-- Importer DeconnexionService -->
 <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main">
   <div class="container-fluid">
     <!-- Brand -->
-    <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" routerLinkActive="active" [routerLink]="['/dashboard']">{{getTitle()}}</a>
+    <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" routerLinkActive="active" [routerLink]="['/dashboard']">{{ getTitle() }}</a>
+    
     <!-- User -->
     <ul class="navbar-nav align-items-center d-none d-md-flex">
+      <!-- Notifications Dropdown -->
+      <li class="nav-item" ngbDropdown placement="bottom-right">
+        <a class="nav-link nav-link-icon" role="button" ngbDropdownToggle>
+          <i class="ni ni-bell-55"></i>
+          <span class="badge badge-danger">{{ notifications.length }}</span>
+        </a>
+        <div class="dropdown-menu-arrow dropdown-menu-right" ngbDropdownMenu>
+          <div *ngFor="let notification of notifications">
+            <a class="dropdown-item" (click)="markAsRead(notification.id)">
+              {{ notification.message }}
+            </a>
+          </div>
+          <div *ngIf="notifications.length === 0" class="dropdown-item text-center">
+            No new notifications
+          </div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="javascript:void(0)">View all notifications</a>
+        </div>
+      </li>
+      <!-- Direct Logout without Image -->
       <li class="nav-item">
-        <!-- Direct Logout without Image -->
         <a class="nav-link logout-link" (click)="logout()">
           <i class="ni ni-user-run"></i>
           <span>Logout</span>
