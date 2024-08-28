@@ -18,6 +18,7 @@ import { ReclamationManagementComponent } from './pages/reclamation-management/r
 import { ReclamationComponent } from './pages/reclamation/reclamation.component';
 import { BlogComponent } from './pages/blog/blog.component';
 import { FeedbackManagementComponent } from './pages/feedback-management/feedback-management.component';
+import { ChatComponent } from './pages/chat/chat.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { FeedbackManagementComponent } from './pages/feedback-management/feedbac
     ReclamationComponent,
     BlogComponent,
     FeedbackManagementComponent,
+    ChatComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -9,9 +9,9 @@ import { StageManagementComponent } from './pages/stage-management/stage-managem
 import { ReclamationComponent } from './pages/reclamation/reclamation.component';
 import { ReclamationManagementComponent } from './pages/reclamation-management/reclamation-management.component';
 import { BlogComponent } from './pages/blog/blog.component';
-import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component'; 
+import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component';
 import { FeedbackManagementComponent } from './pages/feedback-management/feedback-management.component';
-
+import { ChatComponent } from './pages/chat/chat.component'; // Importation du ChatComponent
 
 const routes: Routes = [
   {
@@ -43,7 +43,10 @@ const routes: Routes = [
     path: 'feedback-management',
     component: FeedbackManagementComponent, // Nouvelle route pour FeedbackManagementComponent
   },
-  
+  {
+    path: 'chat',
+    component: ChatComponent, // Nouvelle route pour ChatComponent
+  },
   {
     path: '',
     component: AdminLayoutComponent,
@@ -79,6 +82,6 @@ const routes: Routes = [
       useHash: true
     })
   ],
-  exports: [],
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }
