@@ -13,6 +13,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   password: string = '';
 
   carouselIndex: number = 0;
+  intervalId: any;
 
   carouselImages: string[] = [
     'assets/img/brand/smartup cover.jpg',
@@ -23,11 +24,17 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
-    // Initializations if necessary
+    // Set the interval to change the image every second (1000 ms)
+    this.intervalId = setInterval(() => {
+      this.nextImage();
+    }, 3000);
   }
 
   ngOnDestroy() {
-    // Cleanup of subscriptions or other tasks
+    // Clear the interval when the component is destroyed
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   loginUser() {

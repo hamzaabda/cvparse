@@ -1,15 +1,19 @@
+<!-- chat.component.html -->
 <div class="chat-container">
-    <div class="chat-header">
-      <h3>Chat</h3>
-    </div>
-    <div class="messages">
+  <div class="chat-header">
+    <h2>Chat Room</h2>
+  </div>
+  <div class="chat-body">
+    <div class="message-list">
       <div *ngFor="let message of messages" class="message">
-        <p>{{ message }}</p>
+        <strong>{{ message.sender }}</strong>
+        <p>{{ message.content }}</p>
+        <span class="timestamp">{{ message.timestamp | date:'short' }}</span>
       </div>
     </div>
-    <div class="input-container">
-      <input type="text" [(ngModel)]="newMessage" placeholder="Enter your message" />
+    <div class="message-input">
+      <input [(ngModel)]="messageContent" placeholder="Type your message..." (keydown.enter)="sendMessage()" />
       <button (click)="sendMessage()">Send</button>
     </div>
   </div>
-  
+</div>
