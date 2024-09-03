@@ -1,8 +1,13 @@
 package com.example.pfe.controllers;
 
 import com.example.pfe.models.OffreEmploi;
+import com.example.pfe.services.NotificationService;
 import com.example.pfe.services.OffreEmploiService;
 import com.example.pfe.email.EmailService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +17,16 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,12 +38,17 @@ public class OffreEmploiController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     // Endpoint to create a new OffreEmploi
     @PostMapping
     public ResponseEntity<OffreEmploi> createOffreEmploi(@RequestBody OffreEmploi offreEmploi) {
         OffreEmploi createdOffreEmploi = offreEmploiService.createOffreEmploi(offreEmploi);
+        notificationService.createNotification("Nouvelle offre d'emploi ajoutée: " + offreEmploi.getTitre());
         return new ResponseEntity<>(createdOffreEmploi, HttpStatus.CREATED);
     }
+
 
     // Endpoint to retrieve all OffreEmplois
     @GetMapping
@@ -71,23 +84,29 @@ public class OffreEmploiController {
     }
 
     // Endpoint to apply for a job offer with a CV
+    // Endpoint pour postuler à une offre d'emploi avec un CV
     @PostMapping("/{id}/apply")
     public ResponseEntity<String> applyToOffreEmploi(@PathVariable("id") Long id, @RequestParam("cv") MultipartFile cvFile) {
         try {
-            // Extract text from the uploaded CV file
+            // Extraction du texte du fichier CV téléchargé
             InputStream inputStream = cvFile.getInputStream();
             PDDocument document = PDDocument.load(inputStream);
             PDFTextStripper pdfStripper = new PDFTextStripper();
             String text = pdfStripper.getText(document);
             document.close();
 
-            // Extract email from CV
+            // Vérification si le CV est en français
+            if (!isFrenchCV(text)) {
+                return new ResponseEntity<>("Le CV n'est pas en français.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Extraction de l'email du CV
             String email = extractEmail(text);
             if (email == null) {
                 return new ResponseEntity<>("Aucun email trouvé dans le CV.", HttpStatus.BAD_REQUEST);
             }
 
-            // Retrieve the job offer to check the required skills
+            // Récupération de l'offre d'emploi pour vérifier les compétences requises
             Optional<OffreEmploi> offreEmploiOptional = offreEmploiService.getOffreEmploiById(id);
             if (offreEmploiOptional.isEmpty()) {
                 return new ResponseEntity<>("Offre d'emploi non trouvée", HttpStatus.NOT_FOUND);
@@ -96,11 +115,31 @@ public class OffreEmploiController {
             OffreEmploi offreEmploi = offreEmploiOptional.get();
             String competencesRequises = offreEmploi.getCompetencesRequises().toLowerCase();
 
-            // Check if CV contains required skills
-            if (containsRequiredSkills(text.toLowerCase(), competencesRequises)) {
-                // Send an email to the candidate
-                LocalDate interviewDate = LocalDate.now().plusWeeks(1); // Example: Interview in a week
-                emailService.sendInterviewInvitation(email, interviewDate);
+            // Vérification du niveau d'éducation requis
+            if (!containsRequiredEducationLevel(text.toLowerCase(), offreEmploi.getNiveauEducationRequis())) {
+                emailService.sendAcceptanceOrRejectionEmail(email, false);
+                return new ResponseEntity<>("Le niveau d'éducation requis n'est pas satisfait.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Extraction et vérification de l'expérience requise
+            int experience = extractExperience(text);
+            if (experience < offreEmploi.getExperienceRequise()) {
+                emailService.sendAcceptanceOrRejectionEmail(email, false);
+                return new ResponseEntity<>("L'expérience requise n'est pas suffisante.", HttpStatus.BAD_REQUEST);
+            }
+
+            // Vérification si le CV contient les compétences requises ou les technologies pertinentes
+            if (containsRequiredSkillsOrTechnologies(text.toLowerCase(), competencesRequises)) {
+                // Enregistrement de l'email dans un fichier CSV
+                saveEmailToCSV(email);
+
+                // Envoi d'un email au candidat pour planifier un entretien
+                LocalDateTime interviewDateTime = scheduleInterviewDateTime();
+                emailService.sendInterviewInvitation(email, interviewDateTime);
+
+                // Planifier les entretiens pour tous les candidats acceptés
+                sendInterviewInvitations();
+
                 return new ResponseEntity<>("Le CV est compatible avec l'offre d'emploi. Un email a été envoyé.", HttpStatus.OK);
             } else {
                 emailService.sendAcceptanceOrRejectionEmail(email, false);
@@ -115,23 +154,63 @@ public class OffreEmploiController {
         }
     }
 
+    private boolean isFrenchCV(String text) {
+        String[] frenchKeywords = {"le", "la", "les", "de", "des", "un", "une", "et", "ou", "à"};
+        long count = Arrays.stream(frenchKeywords)
+                .filter(keyword -> text.toLowerCase().contains(keyword))
+                .count();
+        return count >= 3;
+    }
+
     private String extractEmail(String text) {
         String emailRegex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}";
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(emailRegex);
-        java.util.regex.Matcher matcher = pattern.matcher(text);
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
             return matcher.group();
         }
         return null;
     }
 
-    private boolean containsRequiredSkills(String cvText, String competencesRequises) {
-        // Extract the required skills from the job offer
+    private boolean containsRequiredEducationLevel(String cvText, String niveauEducationRequis) {
+        String[] educationKeywords = {"ingénieur", "ingénierie"};
+        for (String keyword : educationKeywords) {
+            if (cvText.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int extractExperience(String text) {
+        String experienceRegex = "(\\d+)\\s*(ans|années)\\s*(d'?expérience)?";
+        Pattern pattern = Pattern.compile(experienceRegex);
+        Matcher matcher = pattern.matcher(text);
+        int maxExperience = 0;
+        while (matcher.find()) {
+            int experience = Integer.parseInt(matcher.group(1));
+            if (experience > maxExperience) {
+                maxExperience = experience;
+            }
+        }
+        return maxExperience;
+    }
+
+    private boolean containsRequiredSkillsOrTechnologies(String cvText, String competencesRequises) {
+        List<String> generalTechnologies = Arrays.asList(
+                "html", "css", "javascript", "typescript", "python", "java", "php", "ruby", "c#", "c++", "swift", "kotlin", "dart", "go", "rust",
+                "angular", "react", "vue", "svelte", "bootstrap", "tailwind", "jquery",
+                "node.js", "spring boot", "django", "flask", "ruby on rails", "asp.net", "laravel", "symfony", "express.js",
+                "next.js", "nuxt.js", "meteor", "blazor",
+                "flutter", "react native", "ionic", "swiftui", "jetpack compose", "xamarin", "cordova"
+        );
+
         List<String> requiredSkills = Arrays.asList(competencesRequises.split(",\\s*"));
 
-        // Check occurrences for each required skill
-        for (String skill : requiredSkills) {
-            // Check for at least 2 occurrences of the skill in the text
+        List<String> combinedSkills = new ArrayList<>(requiredSkills);
+        combinedSkills.addAll(generalTechnologies);
+
+        for (String skill : combinedSkills) {
             if (countOccurrences(cvText, skill) >= 2) {
                 return true;
             }
@@ -142,11 +221,48 @@ public class OffreEmploiController {
     private int countOccurrences(String text, String word) {
         int count = 0;
         int index = 0;
-        // Count occurrences of the word in the text
         while ((index = text.indexOf(word, index)) != -1) {
             count++;
             index += word.length();
         }
         return count;
+    }
+
+    private LocalDateTime scheduleInterviewDateTime() {
+        return LocalDateTime.now().plusWeeks(1).withHour(10).withMinute(0);
+    }
+
+    private void saveEmailToCSV(String email) throws IOException {
+        try (FileWriter fileWriter = new FileWriter("src/main/resources/emails.csv", true);
+             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write(email);
+            bufferedWriter.newLine();
+        }
+    }
+
+    private List<String> getEmailsFromCSV(String csvFilePath) throws IOException {
+        List<String> emails = new ArrayList<>();
+        try (InputStream inputStream = new FileInputStream(csvFilePath);
+             CSVParser csvParser = new CSVParser(new InputStreamReader(inputStream), CSVFormat.DEFAULT.withHeader("Email"))) {
+            for (CSVRecord record : csvParser) {
+                String email = record.get("Email");
+                emails.add(email);
+            }
+        }
+        return emails;
+    }
+
+    private void sendInterviewInvitations() {
+        try {
+            String csvFilePath = "src/main/resources/emails.csv"; // Mettez à jour le chemin du fichier CSV
+            List<String> emails = getEmailsFromCSV(csvFilePath);
+            LocalDateTime interviewDateTime = scheduleInterviewDateTime();
+
+            for (String email : emails) {
+                emailService.sendInterviewInvitation(email, interviewDateTime);
+            }
+        } catch (IOException | MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

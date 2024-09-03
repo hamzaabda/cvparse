@@ -1,10 +1,9 @@
 package com.example.pfe.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 
 @Entity
@@ -22,6 +21,18 @@ public class OffreEmploi {
     private int experienceRequise;
     private String typeContrat;
     private String dateDebut;
+
+    @OneToMany(mappedBy = "offreEmploi")
+    private List<Feedback> feedbacks;
+
+    // Getters and setters
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
 
     // Getters and setters
     public Long getId() {

@@ -1,6 +1,7 @@
 package com.example.pfe.controllers;
 
 import com.example.pfe.models.OffreStage;
+import com.example.pfe.services.NotificationService;
 import com.example.pfe.services.OffreStageService;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -40,6 +41,9 @@ public class OffreStageController {
     private EmailService emailService;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     public OffreStageController(OffreStageService offreStageService) {
         this.offreStageService = offreStageService;
         this.tesseract = new Tesseract();
@@ -51,8 +55,10 @@ public class OffreStageController {
     @PostMapping("/offres-stage")
     public ResponseEntity<OffreStage> createOffreStage(@RequestBody OffreStage offreStage) {
         OffreStage createdOffreStage = offreStageService.createOffreStage(offreStage);
+        notificationService.createNotification("Nouvelle offre de stage ajoutée: " + offreStage.getTitre());
         return new ResponseEntity<>(createdOffreStage, HttpStatus.CREATED);
     }
+
 
     @GetMapping("/offres-stage")
     public ResponseEntity<List<OffreStage>> getAllOffresStage() {

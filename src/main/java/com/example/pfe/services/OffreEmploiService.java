@@ -20,6 +20,7 @@ public class OffreEmploiService {
     @Autowired
     private AuthenticationService authenticationService;
 
+
     // Create operation
     public OffreEmploi createOffreEmploi(OffreEmploi offreEmploi) {
         return offreEmploiRepository.save(offreEmploi);
@@ -51,5 +52,7 @@ public class OffreEmploiService {
     public void deleteOffreEmploi(Long id) {
         offreEmploiRepository.deleteById(id);
     }
+
+
 }
 

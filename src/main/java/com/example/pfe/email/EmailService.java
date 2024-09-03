@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
@@ -93,7 +94,7 @@ public class EmailService {
                         "Merci de votre coopération.");
             } else {
                 message.setSubject("Refus de votre candidature au stage");
-                message.setText("Nous regrettons de vous informer que votre candidature au stage a été refusée.");
+                message.setText("Nous regrettons de vous informer que votre candidature a été refusée.");
             }
 
             Transport.send(message);
@@ -140,4 +141,38 @@ public class EmailService {
             throw e;
         }
     }
+
+
+
+
+
+    public void sendInterviewInvitation(String recipientEmail, LocalDateTime interviewDateTime) throws MessagingException {
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject("Invitation à un entretien");
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            String formattedDate = interviewDateTime.format(dateFormatter);
+            String formattedTime = interviewDateTime.format(timeFormatter);
+
+            String location = "Siège Social\nImmeuble 3S, Rue Abou Hamed El Ghazeli 1073 Montplaisir – Tunis – Tunisie";
+
+            message.setText("Nous vous invitons à un entretien le " + formattedDate + " à " + formattedTime + ".\n\n" +
+                    "Lieu : " + location + "\n\n" +
+                    "Merci de confirmer votre présence.");
+
+            Transport.send(message);
+            logger.info("E-mail d'invitation à l'entretien envoyé avec succès à " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email d'invitation à l'entretien : ", e);
+            throw e;
+        }
+    }
+
+
+
+
 }
