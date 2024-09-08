@@ -32,7 +32,6 @@ public class FeedbackController {
                 .body(feedbacks);
     }
 
-
     @GetMapping("/feedback/{id}")
     public ResponseEntity<Feedback> getFeedbackById(@PathVariable Long id) {
         Feedback feedback = feedbackService.getFeedbackById(id);

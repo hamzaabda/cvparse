@@ -22,17 +22,7 @@ public class OffreStage {
 
     private LocalDate dateExpiration;
 
-    @OneToMany(mappedBy = "offreStage")
-    private List<Feedback> feedbacks;
 
-    // Getters and setters
-    public List<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
-
-    public void setFeedbacks(List<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
-    }
 
     @ElementCollection
     private List<String> cvs; // Utilisation d'une liste pour stocker les noms de fichiers des CVs

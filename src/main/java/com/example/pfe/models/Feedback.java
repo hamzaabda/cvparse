@@ -10,13 +10,6 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "offre_emploi_id")
-    private OffreEmploi offreEmploi;
-
-    @ManyToOne
-    @JoinColumn(name = "offre_stage_id")
-    private OffreStage offreStage;
 
     private String commentaire;
     private int rating; // Par exemple, une échelle de 1 à 5
@@ -31,21 +24,7 @@ public class Feedback {
         this.id = id;
     }
 
-    public OffreEmploi getOffreEmploi() {
-        return offreEmploi;
-    }
-
-    public void setOffreEmploi(OffreEmploi offreEmploi) {
-        this.offreEmploi = offreEmploi;
-    }
-
-    public OffreStage getOffreStage() {
-        return offreStage;
-    }
-
-    public void setOffreStage(OffreStage offreStage) {
-        this.offreStage = offreStage;
-    }
+    
 
     public String getCommentaire() {
         return commentaire;

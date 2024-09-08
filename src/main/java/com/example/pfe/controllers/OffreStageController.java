@@ -162,22 +162,7 @@ public class OffreStageController {
         }
     }
 
-    // Méthode pour sauvegarder les informations du candidat dans un fichier CSV
-    private void saveCandidateInfoToCSV(String csvFilePath, Map<String, String> candidateContacts) throws IOException {
-        List<String[]> data = new ArrayList<>();
-        data.add(new String[]{"Nom", "Prenom", "Email", "Telephone"});
 
-        // Supposons que les noms et prénoms ne sont pas extraits directement ici
-        // Exemple basique pour illustrer l'écriture dans le CSV
-        data.add(new String[]{"", "", candidateContacts.get("email"), candidateContacts.get("phone")});
-
-        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(csvFilePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
-            for (String[] line : data) {
-                writer.write(String.join(",", line));
-                writer.newLine();
-            }
-        }
-    }
     @DeleteMapping("/offres-stage/{id}")
     public ResponseEntity<Void> deleteOffreStage(@PathVariable("id") Long id) {
         offreStageService.deleteOffreStage(id);
@@ -192,16 +177,13 @@ public class OffreStageController {
         return new ResponseEntity<>(offresStage, HttpStatus.OK);
     }
 
-    // Méthode pour convertir un PDF en une liste d'images
     private List<BufferedImage> convertPdfToImages(Path pdfPath) throws IOException {
         List<BufferedImage> images = new ArrayList<>();
         try (PDDocument document = PDDocument.load(pdfPath.toFile())) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
             int pageCount = document.getNumberOfPages();
 
-            // Parcourir les pages du document
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-                // Render la page à 300 DPI pour une meilleure qualité
                 BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
                 images.add(image);
             }
@@ -209,16 +191,10 @@ public class OffreStageController {
         return images;
     }
 
-    // Méthode pour extraire les compétences du texte extrait du CV
     private List<String> extractCompetencesFromText(String text) {
         List<String> competences = new ArrayList<>();
-        // Mots-clés pour les compétences
-        String[] keywords = {"spring", "nodejs", "java", "python", "sql", "javascript", "c++", "c#", "ruby", "go", "asp.net", "angular", "react", "vue"};
-
-        // Convertir le texte en minuscules pour une recherche insensible à la casse
+        String[] keywords = {"spring", "node", "java", "python", "sql", "javascript", "c++", "c#", "ruby", "go", "asp.net", "angular", "react", "vue"};
         String lowerText = text.toLowerCase();
-
-        // Vérifier chaque mot-clé et l'ajouter à la liste si présent dans le texte
         for (String keyword : keywords) {
             if (lowerText.contains(keyword)) {
                 competences.add(keyword);
@@ -227,41 +203,46 @@ public class OffreStageController {
         return competences;
     }
 
-    // Méthode pour comparer les compétences requises et celles du CV
     private boolean compareCompetences(List<String> competencesRequises, List<String> competencesCV) {
-        // Vérifier si toutes les compétences requises sont présentes dans les compétences du CV
         return competencesCV.containsAll(competencesRequises);
     }
 
-    // Méthode pour extraire les coordonnées (email et numéro de téléphone) du texte extrait du CV
     private Map<String, String> extractCandidateContactsFromText(String text) {
         Map<String, String> contacts = new HashMap<>();
 
-        // Regex pour extraire l'email
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
         Matcher emailMatcher = emailPattern.matcher(text);
         if (emailMatcher.find()) {
             contacts.put("email", emailMatcher.group());
         }
 
-        // Liste d'expressions régulières pour différents formats de numéros de téléphone
         List<Pattern> phonePatterns = Arrays.asList(
-                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\+216\\s?\\d{1,3}\\s?\\d{1,3}\\s?\\d{1,4}\\b"), // Format +216 xxxx xxxx ou variantes
-                Pattern.compile("\\+?\\d{2,3}?\\s?\\d{1,3}\\s?\\d{2,4}\\s?\\d{2,4}\\s?\\d{2,4}"), // Format international ou local
-                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\d{8}") // Format 8 chiffres (téléphone local)
+                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\+216\\s?\\d{1,3}\\s?\\d{1,3}\\s?\\d{1,4}\\b"),
+                Pattern.compile("\\+?\\d{2,3}?\\s?\\d{1,3}\\s?\\d{2,4}\\s?\\d{2,4}\\s?\\d{2,4}"),
+                Pattern.compile("(?i)(?:\\b(?:phone|téléphone|tel|☎️|📞)?:?\\s*)?\\d{8}")
         );
 
-        // Essayer d'extraire le numéro de téléphone avec les différentes expressions régulières
         for (Pattern phonePattern : phonePatterns) {
             Matcher phoneMatcher = phonePattern.matcher(text);
             if (phoneMatcher.find()) {
                 contacts.put("phone", phoneMatcher.group());
-                break; // Arrêter la recherche si un numéro de téléphone est trouvé
+                break;
             }
         }
 
         return contacts;
     }
 
+    private void saveCandidateInfoToCSV(String csvFilePath, Map<String, String> candidateContacts) throws IOException {
+        List<String[]> data = new ArrayList<>();
+        data.add(new String[]{"Nom", "Prenom", "Email", "Telephone"});
+        data.add(new String[]{"", "", candidateContacts.get("email"), candidateContacts.get("phone")});
 
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(csvFilePath), StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
+            for (String[] line : data) {
+                writer.write(String.join(",", line));
+                writer.newLine();
+            }
+        }
+    }
 }

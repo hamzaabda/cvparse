@@ -22,17 +22,8 @@ public class OffreEmploi {
     private String typeContrat;
     private String dateDebut;
 
-    @OneToMany(mappedBy = "offreEmploi")
-    private List<Feedback> feedbacks;
 
-    // Getters and setters
-    public List<Feedback> getFeedbacks() {
-        return feedbacks;
-    }
 
-    public void setFeedbacks(List<Feedback> feedbacks) {
-        this.feedbacks = feedbacks;
-    }
 
     // Getters and setters
     public Long getId() {

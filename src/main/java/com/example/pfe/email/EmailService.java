@@ -172,7 +172,39 @@ public class EmailService {
         }
     }
 
+    public void sendAcceptanceEmail(String recipientEmail, LocalDateTime adminProcedureDateTime) {
+        String subject = "Félicitations ! Votre candidature est acceptée";
+        String body = String.format(
+                "Cher(e) candidat(e),\n\nNous avons le plaisir de vous informer que votre candidature a été acceptée.\n\n" +
+                        "Veuillez vous présenter à notre entreprise  pour compléter les procédures administratives.\n\n" +
+                        "Cordialement,\nL'équipe de recrutement",
+                adminProcedureDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+                adminProcedureDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+        );
+        sendEmail(recipientEmail, subject, body);
+    }
 
+    public void sendRejectionEmail(String recipientEmail) {
+        String subject = "Désolé, votre candidature est refusée";
+        String body = "Cher(e) candidat(e),\n\nNous vous remercions pour votre candidature. Malheureusement, nous ne pouvons pas donner suite à votre demande pour le poste en question.\n\nNous vous souhaitons bonne chance pour vos futures recherches.\n\nCordialement,\nL'équipe de recrutement";
+        sendEmail(recipientEmail, subject, body);
+    }
+
+
+    private void sendEmail(String recipientEmail, String subject, String body) {
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
+            message.setSubject(subject);
+            message.setText(body);
+
+            Transport.send(message);
+            logger.info("Email envoyé à : " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email à : " + recipientEmail, e);
+        }
+    }
 
 
 }
