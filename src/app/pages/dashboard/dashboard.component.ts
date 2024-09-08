@@ -1,13 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import Chart from 'chart.js';
-
-// core components
-import {
-  chartOptions,
-  parseOptions,
-  chartExample1,
-  chartExample2
-} from "../../variables/charts";
+import { CalendarService } from './calendar.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,46 +7,89 @@ import {
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  public days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  public currentMonth: string;
+  public currentYear: number;
+  public dates: number[] = [];
+  public monthNames: string[] = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  
+  private monthIndex: number;
+  public selectedDate: number | null = null;
+  public eventTitle: string = '';
+  public eventDescription: string = '';
+  public events: any[] = [];
 
-  public datasets: any;
-  public data: any;
-  public salesChart;
-  public clicked: boolean = true;
-  public clicked1: boolean = false;
+  constructor(private calendarService: CalendarService) {
+    const today = new Date();
+    this.currentYear = today.getFullYear();
+    this.monthIndex = today.getMonth();
+    this.currentMonth = this.monthNames[this.monthIndex] + ' ' + this.currentYear;
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.generateCalendar();
+    this.loadEvents();
+  }
 
-    this.datasets = [
-      [0, 20, 10, 30, 15, 40, 20, 60, 60],
-      [0, 20, 5, 25, 10, 30, 15, 40, 40]
-    ];
-    this.data = this.datasets[0];
+  generateCalendar(): void {
+    const firstDayOfMonth = new Date(this.currentYear, this.monthIndex, 1).getDay();
+    const daysInMonth = new Date(this.currentYear, this.monthIndex + 1, 0).getDate();
 
+    this.dates = [];
+    
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      this.dates.push(null);
+    }
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      this.dates.push(day);
+    }
+  }
 
-    var chartOrders = document.getElementById('chart-orders');
+  changeMonth(direction: number): void {
+    this.monthIndex += direction;
+    if (this.monthIndex > 11) {
+      this.monthIndex = 0;
+      this.currentYear++;
+    } else if (this.monthIndex < 0) {
+      this.monthIndex = 11;
+      this.currentYear--;
+    }
+    this.currentMonth = this.monthNames[this.monthIndex] + ' ' + this.currentYear;
+    this.generateCalendar();
+    this.loadEvents();
+  }
 
-    parseOptions(Chart, chartOptions());
+  selectDate(date: number): void {
+    this.selectedDate = date;
+  }
 
+  createEvent(): void {
+    if (this.selectedDate !== null && this.eventTitle && this.eventDescription) {
+      const event = {
+        title: this.eventTitle,
+        description: this.eventDescription,
+        date: `${this.currentYear}-${this.monthIndex + 1}-${this.selectedDate}`
+      };
+      this.calendarService.createEvent(event).subscribe(() => {
+        this.eventTitle = '';
+        this.eventDescription = '';
+        this.selectedDate = null;
+        this.loadEvents(); // Reload events after creating a new one
+      });
+    }
+  }
 
-    var ordersChart = new Chart(chartOrders, {
-      type: 'bar',
-      options: chartExample2.options,
-      data: chartExample2.data
+  loadEvents(): void {
+    this.calendarService.getEvents().subscribe(data => {
+      // Filter events to show only for the current month
+      this.events = data.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate.getFullYear() === this.currentYear && eventDate.getMonth() === this.monthIndex;
+      });
     });
-
-    var chartSales = document.getElementById('chart-sales');
-
-    this.salesChart = new Chart(chartSales, {
-			type: 'line',
-			options: chartExample1.options,
-			data: chartExample1.data
-		});
   }
-
-
-  public updateOptions() {
-    this.salesChart.data.datasets[0].data = this.data;
-    this.salesChart.update();
-  }
-
 }

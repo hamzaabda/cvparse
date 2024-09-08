@@ -1,0 +1,80 @@
+.feedback-list {
+    background-image: url('/assets/img/brand/smt.jpg');
+    background-size: cover; /* L'image couvre l'intégralité du conteneur */
+    background-position: center; /* Centre l'image dans le conteneur */
+    background-repeat: no-repeat; /* Évite la répétition de l'image */
+    background-attachment: fixed; /* L'image reste fixe lors du défilement */
+    height: 100vh; /* Hauteur du conteneur pour couvrir toute la hauteur de la fenêtre */
+    padding: 2rem; /* Ajustez le padding selon vos besoins */
+    border-radius: 8px; /* Pour avoir des coins arrondis, si nécessaire */
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centre le contenu verticalement */
+    align-items: center; /* Centre le contenu horizontalement */
+    text-align: center; /* Centre le texte */
+    
+    h2 {
+      font-size: 2rem; /* Augmentez la taille de la police pour plus de visibilité */
+      color: #fff; /* Couleur du texte adaptée à l'image de fond */
+      margin-bottom: 1.5rem;
+    }
+  
+    ul {
+      list-style: none;
+      padding: 0;
+  
+      .feedback-item {
+        background-color: rgba(255, 255, 255, 0.8); /* Fond semi-transparent pour améliorer la lisibilité */
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease-in-out;
+  
+        &:hover {
+          transform: scale(1.02);
+        }
+  
+        .feedback-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.75rem;
+  
+          .label {
+            font-weight: bold;
+            color: #333;
+          }
+  
+          .comment {
+            font-size: 1.2rem;
+            color: #555;
+          }
+        }
+  
+        .feedback-details {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.9rem;
+  
+          .detail {
+            margin-right: 1.5rem;
+  
+            .label {
+              color: #777;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .no-feedback {
+    p {
+      color: #fff; /* Couleur du texte adaptée à l'image de fond */
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 2rem; /* Ajustez le padding selon vos besoins */
+    }
+  }
+  

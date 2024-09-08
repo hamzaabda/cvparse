@@ -1,30 +1,76 @@
 <div class="reclamation-container">
-    <h1>Reclamations</h1>
+  <header>
+    <h1>Réclamations</h1>
+  </header>
+
+  <section class="reclamation-list-section">
+    <h2>Liste des Réclamations</h2>
     <ul class="reclamation-list">
-      <li *ngFor="let reclamation of reclamations" (click)="getReclamationById(reclamation.id)">
+      <li 
+        *ngFor="let reclamation of reclamations" 
+        (click)="getReclamationById(reclamation.id)"
+        role="button"
+        aria-label="Voir les détails de la réclamation: {{ reclamation.titre }}"
+      >
         {{ reclamation.titre }} - {{ reclamation.statut }}
       </li>
     </ul>
-  
-    <div *ngIf="selectedReclamation" class="reclamation-details">
-      <h2>Details</h2>
-      <!-- Id is not displayed here -->
-      <p><strong>Titre:</strong> {{ selectedReclamation.titre }}</p>
-      <p><strong>Description:</strong> {{ selectedReclamation.description }}</p>
-      <p><strong>Statut:</strong> {{ selectedReclamation.statut }}</p>
-      <p><strong>Email:</strong> {{ selectedReclamation.email }}</p>
-      <button (click)="deleteReclamation(selectedReclamation.id)">Delete</button>
-    </div>
-  
-    <div class="reclamation-create">
-      <h2>Create Reclamation</h2>
-      <form (ngSubmit)="createReclamation(newReclamation)">
-        <input [(ngModel)]="newReclamation.titre" name="titre" placeholder="Titre" required />
-        <input [(ngModel)]="newReclamation.description" name="description" placeholder="Description" required />
-        <input [(ngModel)]="newReclamation.statut" name="statut" placeholder="Statut" required />
-        <input [(ngModel)]="newReclamation.email" name="email" type="email" placeholder="Email" required />
-        <button type="submit">Create</button>
-      </form>
-    </div>
-  </div>
-  
+  </section>
+
+  <section *ngIf="selectedReclamation" class="reclamation-details">
+    <h2>Détails de la Réclamation</h2>
+    <p><strong>Titre :</strong> {{ selectedReclamation.titre }}</p>
+    <p><strong>Description :</strong> {{ selectedReclamation.description }}</p>
+    <p><strong>Statut :</strong> {{ selectedReclamation.statut }}</p>
+    <p><strong>Email :</strong> {{ selectedReclamation.email }}</p>
+    <button (click)="deleteReclamation(selectedReclamation.id)">Supprimer</button>
+  </section>
+
+  <button (click)="toggleFormVisibility()">
+    {{ isFormVisible ? 'Masquer le formulaire' : 'Créer une Réclamation' }}
+  </button>
+
+  <section *ngIf="isFormVisible" class="reclamation-create">
+    <h2>Créer une Réclamation</h2>
+    <form (ngSubmit)="createReclamation(newReclamation)">
+      <label for="titre">Titre :</label>
+      <input 
+        id="titre" 
+        [(ngModel)]="newReclamation.titre" 
+        name="titre" 
+        placeholder="Titre" 
+        required 
+      />
+      
+      <label for="description">Description :</label>
+      <input 
+        id="description" 
+        [(ngModel)]="newReclamation.description" 
+        name="description" 
+        placeholder="Description" 
+        required 
+      />
+      
+      <label for="statut">Statut :</label>
+      <input 
+        id="statut" 
+        [(ngModel)]="newReclamation.statut" 
+        name="statut" 
+        placeholder="Statut" 
+        required 
+      />
+      
+      <label for="email">Email :</label>
+      <input 
+        id="email" 
+        [(ngModel)]="newReclamation.email" 
+        name="email" 
+        type="email" 
+        placeholder="Email" 
+        required 
+      />
+      
+      <button type="submit">Créer</button>
+    </form>
+  </section>
+</div>

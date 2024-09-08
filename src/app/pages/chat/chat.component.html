@@ -1,10 +1,9 @@
-<!-- chat.component.html -->
 <div class="chat-container">
   <div class="chat-header">
     <h2>Chat Room</h2>
   </div>
   <div class="chat-body">
-    <div class="message-list">
+    <div class="message-list" [@messageAnimation]>
       <div *ngFor="let message of messages" class="message">
         <strong>{{ message.sender }}</strong>
         <p>{{ message.content }}</p>

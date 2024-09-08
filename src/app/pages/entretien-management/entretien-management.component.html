@@ -1,0 +1,17 @@
+<div class="entretien-management">
+  <h2 class="title">Gestion des entretiens</h2>
+
+  <button class="btn-save" (click)="saveAcceptedEmails()">Sauvegarder les emails acceptés</button>
+  <p class="message" *ngIf="message">{{ message }}</p>
+
+  <h3 class="subtitle">Emails acceptés</h3>
+  <ul class="email-list">
+    <li *ngFor="let email of acceptedEmails" class="email-item">
+      <span class="email">{{ email }}</span>
+      <div class="actions">
+        <button class="btn-action accept" (click)="confirmAction(email, 'accept')">Accepter</button>
+        <button class="btn-action reject" (click)="confirmAction(email, 'reject')">Refuser</button>
+      </div>
+    </li>
+  </ul>
+</div>

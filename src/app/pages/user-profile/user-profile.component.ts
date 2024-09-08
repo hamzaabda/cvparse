@@ -1,15 +1,27 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../user-profile/auth.service';
 import Swal from 'sweetalert2';
 import { Chart } from 'chart.js';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss']
+  styleUrls: ['./user-profile.component.scss'],
+  animations: [
+    trigger('fadeInUp', [
+      state('void', style({
+        opacity: 0,
+        transform: 'translateY(-20px)'
+      })),
+      transition(':enter', [
+        animate('1s ease-out')
+      ])
+    ])
+  ]
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, AfterViewInit {
   token: string;
   admins: any[];
   editingAdmin: boolean = false;
@@ -24,6 +36,10 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
     this.loginAdmin();
+  }
+
+  ngAfterViewInit() {
+    // Optionnel : si vous avez besoin d'animations après que la vue soit complètement initialisée
   }
 
   loginAdmin() {

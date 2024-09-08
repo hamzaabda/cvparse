@@ -1,10 +1,15 @@
-// reclamation-management.component.scss
-
 // Variables
 $primary-color: #3498db;
 $secondary-color: #2ecc71;
 
 // Styles for the component
+:host {
+  display: block;
+  height: 100vh; // Ensure the component takes full viewport height
+  background: url('/assets/img/brand/reclamations.png') no-repeat center center fixed;
+  background-size: contain; // Make sure the image covers the entire area
+}
+
 h2 {
   color: $primary-color;
   margin-bottom: 20px;

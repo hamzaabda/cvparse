@@ -19,6 +19,8 @@ import { ReclamationComponent } from './pages/reclamation/reclamation.component'
 import { BlogComponent } from './pages/blog/blog.component';
 import { FeedbackManagementComponent } from './pages/feedback-management/feedback-management.component';
 import { ChatComponent } from './pages/chat/chat.component';
+import { EntretienManagementComponent } from './pages/entretien-management/entretien-management.component';
+import { FeedbackListComponent } from './pages/feedback-list/feedback-list.component';
 
 
 @NgModule({
@@ -42,6 +44,8 @@ import { ChatComponent } from './pages/chat/chat.component';
     BlogComponent,
     FeedbackManagementComponent,
     ChatComponent,
+    EntretienManagementComponent,
+    FeedbackListComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]

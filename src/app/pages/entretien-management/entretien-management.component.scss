@@ -1,0 +1,101 @@
+.entretien-management {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .title, .subtitle {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .btn-save {
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-save:hover {
+    background-color: #45a049;
+  }
+  
+  .email-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .email-item {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeInUp 0.5s ease;
+  }
+  
+  .email {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-action {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-action.accept {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn-action.reject {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-action.accept:hover {
+    background-color: #218838;
+  }
+  
+  .btn-action.reject:hover {
+    background-color: #c82333;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

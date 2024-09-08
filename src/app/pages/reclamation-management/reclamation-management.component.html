@@ -4,22 +4,19 @@
   <!-- List of Reclamations -->
   <h3>Select a Reclamation to Reply</h3>
   <ul>
-    <li *ngFor="let reclamation of reclamations" (click)="selectReclamation(reclamation)">
-      <!-- Only display relevant information, hide the ID -->
+    <li *ngFor="let reclamation of reclamations" (click)="selectReclamation(reclamation)" tabindex="0" role="button">
       {{ reclamation.message }} ({{ reclamation.email }})
     </li>
   </ul>
 
   <!-- Selected Reclamation Details -->
-  <div *ngIf="selectedReclamation">
+  <div *ngIf="selectedReclamation" class="selected-reclamation">
     <h3>Selected Reclamation</h3>
-    <!-- ID is hidden from the user but still accessible in the component -->
-    <!-- <p><strong>ID:</strong> {{ selectedReclamation.id }}</p> -->
     <p><strong>Email:</strong> {{ selectedReclamation.email }}</p>
     <p><strong>Message:</strong> {{ selectedReclamation.message }}</p>
 
     <!-- Reply Form -->
-    <form (ngSubmit)="sendReply()">
+    <form (ngSubmit)="sendReply()" class="reply-form">
       <label for="responseMessage">Response Message:</label>
       <textarea id="responseMessage" [(ngModel)]="responseMessage" name="responseMessage" required></textarea>
 

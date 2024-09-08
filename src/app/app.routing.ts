@@ -11,7 +11,9 @@ import { ReclamationManagementComponent } from './pages/reclamation-management/r
 import { BlogComponent } from './pages/blog/blog.component';
 import { EmploisManagementComponent } from './pages/emplois-management/emplois-management.component';
 import { FeedbackManagementComponent } from './pages/feedback-management/feedback-management.component';
-import { ChatComponent } from './pages/chat/chat.component'; // Importation du ChatComponent
+import { ChatComponent } from './pages/chat/chat.component'; 
+import { EntretienManagementComponent } from './pages/entretien-management/entretien-management.component'; // Importation du EntretienManagementComponent
+import { FeedbackListComponent } from './pages/feedback-list/feedback-list.component';
 
 const routes: Routes = [
   {
@@ -41,11 +43,17 @@ const routes: Routes = [
   },
   {
     path: 'feedback-management',
-    component: FeedbackManagementComponent, // Nouvelle route pour FeedbackManagementComponent
+    component: FeedbackManagementComponent, // Route pour FeedbackManagementComponent
   },
   {
     path: 'chat',
-    component: ChatComponent, // Nouvelle route pour ChatComponent
+    component: ChatComponent, // Route pour ChatComponent
+  },
+
+  { path: 'feedback-list', component: FeedbackListComponent },
+  {
+    path: 'entretien-management',
+    component: EntretienManagementComponent, // Nouvelle route pour EntretienManagementComponent
   },
   {
     path: '',
@@ -71,7 +79,6 @@ const routes: Routes = [
     path: '**',
     redirectTo: 'stage-management'
   }
-  
 ];
 
 @NgModule({

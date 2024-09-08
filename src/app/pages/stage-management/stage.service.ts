@@ -8,7 +8,7 @@ import { OffreStage } from './offre-stage.model';
 })
 export class StageService {
 
-  private baseUrl = 'http://localhost:8080/auth';
+  private baseUrl = 'http://localhost:8080/auth'; // Assurez-vous que l'URL est correcte
 
   constructor(private http: HttpClient) { }
 
@@ -16,14 +16,13 @@ export class StageService {
     return this.http.get<OffreStage[]>(`${this.baseUrl}/offres-stage`);
   }
 
-  uploadCV(file: File, offreStageId: number): Observable<any> {
+  uploadCV(file: File, offreStageId: number): Observable<string> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-
-    return this.http.post(`${this.baseUrl}/upload-cv/${offreStageId}`, formData, {
-      headers: new HttpHeaders({
-        'enctype': 'multipart/form-data'
-      })
+  
+    return this.http.post<string>(`${this.baseUrl}/upload-cv/${offreStageId}`, formData, {
+      responseType: 'text' as 'json' // Spécifiez que la réponse est du texte
     });
   }
+  
 }

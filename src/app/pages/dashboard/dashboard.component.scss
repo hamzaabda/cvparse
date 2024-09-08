@@ -1,0 +1,161 @@
+.calendar-container {
+    max-width: 900px;
+    margin: 0 auto;  // Center the calendar horizontally
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  // Center align items
+    background-color: #f5f5f5;  // Optional: Add background color to the container
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;  // Ensure header spans the full width of the container
+      margin-bottom: 20px;
+      
+      .nav-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 18px;
+        transition: background-color 0.3s;
+  
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+      
+      h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+    }
+  
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background-color: #ddd;
+      width: 100%;  // Ensure grid spans the full width of the container
+      
+      .day, .date {
+        padding: 15px;
+        text-align: center;
+        background-color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        
+        &:hover {
+          background-color: #f1f1f1;
+        }
+      }
+      
+      .day {
+        font-weight: bold;
+        background-color: #f0f0f0;
+      }
+      
+      .date {
+        &.selected {
+          background-color: #007bff;
+          color: #fff;
+          border-radius: 50%;
+        }
+      }
+    }
+  
+    .event-section {
+      margin-top: 20px;
+      width: 100%;  // Ensure section spans the full width of the container
+      
+      .event-form {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        width: 100%;  // Ensure form spans the full width of the container
+        
+        h2 {
+          margin-top: 0;
+        }
+        
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          
+          label {
+            font-weight: bold;
+          }
+          
+          input, textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+            width: 100%;  // Ensure input and textarea span the full width of the form
+          }
+          
+          .submit-button {
+            align-self: flex-start;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+  
+            &:hover {
+              background-color: #0056b3;
+            }
+          }
+        }
+      }
+      
+      .event-list {
+        margin-top: 20px;
+        
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          
+          thead {
+            background-color: #f0f0f0;
+            
+            th {
+              padding: 12px;
+              border: 1px solid #ddd;
+              text-align: left;
+            }
+          }
+          
+          tbody {
+            tr {
+              &:nth-child(even) {
+                background-color: #f9f9f9;
+              }
+              
+              td {
+                padding: 12px;
+                border: 1px solid #ddd;
+              }
+            }
+          }
+        }
+        
+        p {
+          text-align: center;
+          font-style: italic;
+          color: #666;
+        }
+      }
+    }
+  }
+  

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { WebSocketService } from '../websocket.service';
 import { AuthService } from '../login/auth.service';
@@ -13,6 +13,12 @@ import { AuthService } from '../login/auth.service';
         style({ opacity: 0, transform: 'translateY(20px)' }),
         animate('0.5s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
       ])
+    ]),
+    trigger('fadeInAnimation', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('0.5s 2s ease-out', style({ opacity: 1 })) // Update delay to 2 seconds
+      ])
     ])
   ]
 })
@@ -20,6 +26,8 @@ export class ChatComponent implements OnInit {
   messages: any[] = [];
   messageContent: string = '';
   sender: string;
+
+  @HostBinding('@fadeInAnimation') fadeInAnimation = true; // Apply fade-in animation
 
   constructor(private webSocketService: WebSocketService, private authService: AuthService) { }
 

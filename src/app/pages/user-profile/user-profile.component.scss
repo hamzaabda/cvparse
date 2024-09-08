@@ -1,63 +1,68 @@
 .container {
-    margin-top: 5rem;
+  margin-top: 5rem;
+  background: url('/assets/img/brand/ad.jpg') no-repeat center center;
+  background-size: cover; // Couvre entièrement l'espace disponible tout en préservant les proportions
+  background-attachment: fixed; // Fixe l'image en arrière-plan lors du défilement
+  min-height: 100vh; // Assure que le conteneur couvre toute la hauteur de la fenêtre
+  position: relative; // Assure que les éléments enfants sont positionnés par rapport à ce conteneur
+  overflow: hidden; // Empêche les débordements de l'image de fond
+}
+
+.card {
+  background-color: rgba(108, 117, 125, 0.8); // Couleur de fond secondaire avec opacité
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); // Effet d'ombre
+}
+
+.card-body {
+  padding: 1.25rem; // Ajuste le padding
+}
+
+.heading-small {
+  color: #6c757d; // Couleur du texte secondaire
+  margin-bottom: .5rem;
+}
+
+.text-muted {
+  color: #adb5bd; // Couleur du texte atténué
+}
+
+.btn {
+  &.btn-primary {
+    background-color: #007bff; // Couleur du bouton primaire
   }
-  
-  .card {
-    background-color: #6c757d; /* Secondary background color */
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); /* Shadow effect */
+
+  &.btn-info {
+    background-color: #17a2b8; // Couleur du bouton info
   }
-  
-  .card-body {
-    padding: 1.25rem; /* Adjust padding */
+
+  &.btn-danger {
+    background-color: #dc3545; // Couleur du bouton danger
   }
-  
-  .heading-small {
-    color: #6c757d; /* Secondary text color */
-    margin-bottom: .5rem;
+
+  &.btn-sm {
+    padding: .25rem .5rem; // Ajuste le padding des petits boutons
+    font-size: 80%; // Réduit la taille de police des petits boutons
   }
-  
-  .text-muted {
-    color: #adb5bd; /* Muted text color */
-  }
-  
-  .btn {
-    &.btn-primary {
-      background-color: #007bff; /* Primary button color */
-    }
-  
-    &.btn-info {
-      background-color: #17a2b8; /* Info button color */
-    }
-  
-    &.btn-danger {
-      background-color: #dc3545; /* Danger button color */
-    }
-  
-    &.btn-sm {
-      padding: .25rem .5rem; /* Adjust small button padding */
-      font-size: 80%; /* Decrease small button font size */
-    }
-  }
-  
-  .table {
-    width: 100%;
-    margin-bottom: 1rem;
-    color: #212529; /* Table text color */
-  }
-  
-  th,
-  td {
-    padding: .75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6; /* Table border color */
-  }
-  
-  th {
-    text-align: left;
-    background-color: #e9ecef; /* Table header background color */
-  }
-  
-  .table tbody+tbody {
-    border-top: 2px solid #dee2e6; /* Double border between table bodies */
-  }
-  
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529; // Couleur du texte du tableau
+}
+
+th,
+td {
+  padding: .75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6; // Couleur de la bordure du tableau
+}
+
+th {
+  text-align: left;
+  background-color: #e9ecef; // Couleur de fond de l'en-tête du tableau
+}
+
+.table tbody+tbody {
+  border-top: 2px solid #dee2e6; // Double bordure entre les corps de tableau
+}

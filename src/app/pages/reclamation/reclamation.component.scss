@@ -1,51 +1,89 @@
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
 .reclamation-container {
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .reclamation-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .reclamation-list li {
-    padding: 10px;
-    margin: 5px 0;
-    background-color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .reclamation-list li:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .reclamation-details, .reclamation-create {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .reclamation-details h2, .reclamation-create h2 {
-    margin-top: 0;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
+  padding: 20px;
+  background: url('/assets/img/brand/rec.jpg') no-repeat center center;
+  background-size: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;
+  position: relative;
+}
+
+header {
+  margin-bottom: 20px;
+}
+
+.reclamation-list-section h2,
+.reclamation-details h2,
+.reclamation-create h2 {
+  margin-top: 0;
+}
+
+.reclamation-list {
+  list-style: none;
+  padding: 0;
+}
+
+.reclamation-list li {
+  padding: 10px;
+  margin: 5px 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reclamation-list li:hover {
+  background-color: rgba(241, 241, 241, 0.8);
+}
+
+.reclamation-details,
+.reclamation-create {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  animation: rotate 5s ease-in-out forwards; /* Applique l'animation */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

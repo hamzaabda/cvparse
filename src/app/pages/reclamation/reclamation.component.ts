@@ -13,6 +13,7 @@ export class ReclamationComponent implements OnInit {
   reclamations: Reclamation[] = [];
   selectedReclamation: Reclamation | null = null;
   newReclamation: Reclamation = { id: 0, titre: '', description: '', statut: '', email: '' }; // Initialisation de newReclamation
+  isFormVisible: boolean = false; // Ajout de la propriété pour gérer la visibilité du formulaire
 
   constructor(private reclamationService: ReclamationService) { }
 
@@ -48,6 +49,7 @@ export class ReclamationComponent implements OnInit {
         Swal.fire('Success', 'Reclamation created successfully', 'success');
         this.getAllReclamations(); // Rafraîchir la liste
         this.newReclamation = { id: 0, titre: '', description: '', statut: '', email: '' }; // Réinitialisation de newReclamation après création
+        this.isFormVisible = false; // Cacher le formulaire après création
       },
       (error) => {
         console.error(error);
@@ -82,5 +84,9 @@ export class ReclamationComponent implements OnInit {
         Swal.fire('Error', 'Failed to delete reclamation', 'error');
       }
     );
+  }
+
+  toggleFormVisibility(): void {
+    this.isFormVisible = !this.isFormVisible; // Inverse la visibilité du formulaire
   }
 }

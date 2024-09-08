@@ -1,0 +1,21 @@
+<div class="feedback-list">
+  <h2>Liste des Feedbacks</h2>
+  <ul>
+    <li *ngFor="let feedback of feedbacks" class="feedback-item">
+      <div class="feedback-header">
+        <div class="feedback-details">
+          <div class="detail">
+            <span class="label">Note :</span> {{ feedback.rating }}
+          </div>
+          <div class="detail">
+            <span class="label">Date :</span> {{ feedback.date | date:'yyyy-MM-dd' }}
+          </div>
+        </div>
+        <p class="comment"><strong>Commentaire :</strong> {{ feedback.commentaire }}</p>
+      </div>
+    </li>
+  </ul>
+  <div *ngIf="feedbacks.length === 0" class="no-feedback">
+    <p>Aucun feedback trouvé.</p>
+  </div>
+</div>
