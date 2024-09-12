@@ -1,56 +1,61 @@
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
+  max-width: 100%;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 20px;
+  background-image: url('/assets/img/brand/stg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #000; /* Couleur noire pour le titre principal */
+}
+
+.offre-stage {
+  background-color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.offre-stage h2 {
+  color: #000; /* Couleur noire pour les sous-titres */
+  margin-bottom: 10px;
+}
+
+.offre-stage p {
+  margin: 5px 0;
+  color: #555;
+
+  strong {
       color: #333;
-    }
-  
-    .offre-stage {
-      background-color: #fff;
-      margin-bottom: 20px;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  
-      h2 {
-        color: #007bff;
-        margin-bottom: 10px;
-      }
-  
-      p {
-        margin: 5px 0;
-        color: #555;
-  
-        strong {
-          color: #333;
-        }
-      }
-  
-      input[type="file"] {
-        display: block;
-        margin: 10px 0;
-      }
-  
-      button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-  
-        &:hover {
-          background-color: #0056b3;
-        }
-      }
-    }
   }
-  
+}
+
+.offre-stage input[type="file"] {
+  display: block;
+  margin: 10px 0;
+}
+
+.offre-stage button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+      background-color: #0056b3;
+  }
+}

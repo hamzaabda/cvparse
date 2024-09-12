@@ -1,0 +1,39 @@
+<div class="container">
+  <div class="container-content">
+    <h2>Gestion des Documents</h2>
+
+    <!-- Form to upload a document -->
+    <div class="mb-4">
+      <h3>Upload a Document</h3>
+      <input type="file" (change)="onFileSelected($event)" />
+      <button class="btn btn-primary" (click)="onUpload()">Upload Document</button>
+    </div>
+
+    <!-- Form to get a document by ID -->
+    <div class="mb-4">
+      <h3>Get Document by ID</h3>
+      <input type="number" [(ngModel)]="documentId" placeholder="Enter document ID" class="form-control" />
+      <button class="btn btn-secondary" (click)="onGetDocument()">Get Document</button>
+
+      <div *ngIf="downloadUrl" class="mt-2">
+        <a [href]="downloadUrl" download class="btn btn-success">Download Document</a>
+      </div>
+    </div>
+
+    <!-- Section to list all documents -->
+    <div class="mb-4">
+      <h3>All Documents</h3>
+      <button class="btn btn-info" (click)="loadAllDocuments()">Load All Documents</button>
+      
+      <ul class="list-group mt-2">
+        <li *ngFor="let doc of documentsList" class="list-group-item d-flex justify-content-between align-items-center">
+          <strong>{{ doc.nom }}</strong> - {{ doc.type }}
+          <div>
+            <button class="btn btn-link" (click)="documentId = doc.id; onGetDocument()">Download</button>
+            <button class="btn btn-danger" (click)="documentId = doc.id; onDeleteDocument()">Delete</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

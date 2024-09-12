@@ -1,58 +1,63 @@
-<div class="container">
-  <!-- Formulaire pour créer un nouveau recruteur -->
-  <form (ngSubmit)="onCreateRecruiter()" class="recruiter-form" #recruiterForm="ngForm">
-    <h2>Créer un recruteur</h2>
+<div class="form-container">
+  <form (ngSubmit)="generatePortfolio()">
     <div class="form-group">
-      <label for="username">Nom d'utilisateur:</label>
-      <input type="text" id="username" name="username" required minlength="3" [(ngModel)]="newRecruiter.username" class="form-control" #username="ngModel">
-      <div *ngIf="username.invalid && (username.dirty || username.touched)" class="text-danger">
-        <div *ngIf="username.errors?.required">Nom d'utilisateur requis.</div>
-        <div *ngIf="username.errors?.minlength">Le nom d'utilisateur doit contenir au moins 3 caractères.</div>
-      </div>
+      <label for="profilePhoto">Profile Photo:</label>
+      <input type="file" id="profilePhoto" (change)="onFileChange($event)">
     </div>
     <div class="form-group">
-      <label for="password">Mot de passe:</label>
-      <input type="password" id="password" name="password" required minlength="6" [(ngModel)]="newRecruiter.password" class="form-control" #password="ngModel">
-      <div *ngIf="password.invalid && (password.dirty || password.touched)" class="text-danger">
-        <div *ngIf="password.errors?.required">Mot de passe requis.</div>
-        <div *ngIf="password.errors?.minlength">Le mot de passe doit contenir au moins 6 caractères.</div>
-      </div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" [(ngModel)]="portfolioData.name" name="name" required>
     </div>
     <div class="form-group">
       <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required [(ngModel)]="newRecruiter.email" class="form-control" #email="ngModel">
-      <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger">
-        <div *ngIf="email.errors?.required">Email requis.</div>
-        <div *ngIf="email.errors?.email">Format d'email invalide.</div>
-      </div>
+      <input type="email" id="email" [(ngModel)]="portfolioData.email" name="email" required>
     </div>
-    <button type="submit" class="btn btn-primary" [disabled]="recruiterForm.invalid">Créer</button>
+    <div class="form-group">
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" [(ngModel)]="portfolioData.phone" name="phone">
+    </div>
+    <div class="form-group">
+      <label for="skills">Skills:</label>
+      <input type="text" id="skills" [(ngModel)]="newSkill" name="skills">
+      <button type="button" (click)="addSkill()">Add Skill</button>
+      <ul>
+        <li *ngFor="let skill of portfolioData.skills">{{ skill }}</li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <label for="projects">Projects:</label>
+      <textarea id="projects" [(ngModel)]="portfolioData.projects" name="projects"></textarea>
+    </div>
+    <div class="form-group">
+      <label for="recommendations">Recommendations:</label>
+      <textarea id="recommendations" [(ngModel)]="portfolioData.recommendations" name="recommendations"></textarea>
+    </div>
+    <button type="submit">Generate Portfolio</button>
   </form>
 
-  <!-- Champ de recherche par e-mail -->
-  <div class="form-group mt-3">
-    <label for="searchEmail">Rechercher par e-mail:</label>
-    <input type="text" id="searchEmail" name="searchEmail" [(ngModel)]="searchEmail" class="form-control" (input)="onSearch()">
+  <!-- Affichage des données du portfolio -->
+  <div *ngIf="portfolioData.name || portfolioData.email || portfolioData.phone" class="portfolio-display">
+    <h2>Portfolio Preview</h2>
+    <div class="profile-photo-container">
+      <img *ngIf="portfolioData.profilePhoto" [src]="portfolioData.profilePhoto" alt="Profile Photo" class="profile-photo">
+    </div>
+    <p><strong>Name:</strong> {{ portfolioData.name }}</p>
+    <p><strong>Email:</strong> {{ portfolioData.email }}</p>
+    <p><strong>Phone:</strong> {{ portfolioData.phone }}</p>
+    <p><strong>Skills:</strong></p>
+    <ul>
+      <li *ngFor="let skill of portfolioData.skills">{{ skill }}</li>
+    </ul>
+    <p><strong>Projects:</strong></p>
+    <ul>
+      <li *ngFor="let project of portfolioData.projects">{{ project }}</li>
+    </ul>
+    <p><strong>Recommendations:</strong></p>
+    <ul>
+      <li *ngFor="let recommendation of portfolioData.recommendations">{{ recommendation }}</li>
+    </ul>
   </div>
 
-  <!-- Liste des recruteurs existants -->
-  <h2>Liste des recruteurs</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Nom d'utilisateur</th>
-        <th>Email</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let recruiter of filteredRecruiters">
-        <td>{{ recruiter.username }}</td>
-        <td>{{ recruiter.email }}</td>
-        <td>
-          <!-- Actions here -->
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- Bouton pour générer le PDF -->
+  <button type="button" (click)="generatePDF()">Download PDF</button>
 </div>

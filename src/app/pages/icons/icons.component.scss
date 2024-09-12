@@ -2,39 +2,18 @@ $primary-color: #007bff; // Définir votre couleur primaire
 
 .container {
   padding: 20px;
-  
+  background-image: url('/assets/img/brand/emp.jpg'); // Définir l'image de fond
+  background-size: cover; // Ajuster la taille de l'image pour couvrir le conteneur
+  background-position: center; // Centrer l'image de fond
+  background-repeat: no-repeat; // Ne pas répéter l'image
+  width: 100vw; // Couvrir toute la largeur de la vue
+  height: 100vh; // Couvrir toute la hauteur de la vue
+
   h1 {
     color: $primary-color;
     margin-bottom: 20px;
   }
-  
-  .row {
-    margin-bottom: 20px;
-    
-    .col-md-6 {
-      // Styles spécifiques pour les colonnes
-    }
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-    
-    label {
-      font-weight: bold;
-    }
-    
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    
-    input[type="date"] {
-      // Styles spécifiques pour le type de date
-    }
-  }
-  
+
   .btn-primary {
     background-color: $primary-color;
     border: none;
@@ -48,21 +27,73 @@ $primary-color: #007bff; // Définir votre couleur primaire
     }
   }
   
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      font-weight: bold;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    input[type="date"] {
+      // Styles spécifiques pour le type de date
+      padding: 8px; // Ajuster le padding pour une meilleure apparence
+    }
+  }
+
   .list-group {
     .list-group-item {
       margin-bottom: 20px;
-      
+      padding: 15px; // Ajouter un padding pour plus d'espace interne
+      border: 1px solid #ddd; // Ajouter une bordure légère
+
       h4 {
         margin-bottom: 10px;
+        color: $primary-color; // Couleur du titre en utilisant la couleur primaire
       }
-      
+
       p {
         margin-bottom: 5px;
       }
-      
+
       .btn-danger {
-        // Styles spécifiques pour le bouton supprimer
+        background-color: #dc3545; // Couleur pour le bouton supprimer
+        border: none;
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &:hover {
+          background-color: darken(#dc3545, 10%);
+        }
       }
     }
+  }
+
+  // Animation pour le formulaire
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .d-none {
+    display: none;
   }
 }

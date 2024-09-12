@@ -21,6 +21,8 @@ import { FeedbackManagementComponent } from './pages/feedback-management/feedbac
 import { ChatComponent } from './pages/chat/chat.component';
 import { EntretienManagementComponent } from './pages/entretien-management/entretien-management.component';
 import { FeedbackListComponent } from './pages/feedback-list/feedback-list.component';
+import { DocumentManagementComponent } from './pages/document-management/document-management.component';
+
 
 
 @NgModule({
@@ -46,6 +48,8 @@ import { FeedbackListComponent } from './pages/feedback-list/feedback-list.compo
     ChatComponent,
     EntretienManagementComponent,
     FeedbackListComponent,
+    DocumentManagementComponent,
+   
   ],
   providers: [],
   bootstrap: [AppComponent]

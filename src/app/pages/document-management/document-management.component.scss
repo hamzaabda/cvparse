@@ -1,0 +1,43 @@
+// Ensure the container occupies full viewport height and width
+.container {
+    width: 100vw;  // Full viewport width
+    height: 100vh; // Full viewport height
+    display: flex;
+    flex-direction: column;
+    background: url('/assets/img/brand/dc.jpg') no-repeat center center;
+    background-size: cover; // Ensure the image covers the entire container
+    padding: 20px; // Optional: add some padding if needed
+    box-sizing: border-box; // Ensures padding does not affect the width and height
+    overflow: hidden; // Prevents overflow of animation outside the container
+  }
+  
+  // Keyframes for animation
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  // Apply animation to the container
+  .container-content {
+    animation: slideUp 1s ease-out forwards; // Animation duration and easing
+  }
+  
+  // Optional: Style the container's content
+  h2, h3 {
+    color: #fff; // Ensure text is visible against the background
+  }
+  
+  .mb-4 {
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn {
+    margin: 5px;
+  }
+  

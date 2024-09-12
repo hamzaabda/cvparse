@@ -1,12 +1,14 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-12 text-center"> <!-- Utilisation de la classe text-center pour centrer -->
+    <div class="col-md-12 text-center">
       <h1>Liste des offres d'emploi</h1>
+      <button class="btn btn-primary" (click)="toggleForm()">Let’s Start</button>
     </div>
   </div>
-  <div class="row">
+  
+  <!-- Formulaire de création d'une offre d'emploi -->
+  <div class="row" [ngClass]="{'d-none': !showForm, 'fade-in': showForm}">
     <div class="col-md-6">
-      <!-- Formulaire de création d'une offre d'emploi -->
       <form (submit)="createOffreEmploi(offreEmploiForm.value)" #offreEmploiForm="ngForm">
         <div class="form-group">
           <label for="titre">Titre :</label>
@@ -44,7 +46,9 @@
       </form>
     </div>
   </div>
+  
   <hr>
+  
   <!-- Liste des offres d'emploi -->
   <div class="row">
     <div class="col-md-6">
@@ -59,8 +63,6 @@
           <p><strong>Type de contrat:</strong> {{ offre.typeContrat }}</p>
           <p><strong>Date de début:</strong> {{ offre.dateDebut }}</p>
           <button class="btn btn-danger" (click)="deleteOffreEmploi(offre.id)">Supprimer</button>
-          <!-- Option pour mettre à jour une offre d'emploi -->
-          <!-- <button class="btn btn-secondary" (click)="updateOffreEmploi(offre.id, updatedOffre)">Modifier</button> -->
         </li>
       </ul>
     </div>

@@ -14,6 +14,8 @@ import { FeedbackManagementComponent } from './pages/feedback-management/feedbac
 import { ChatComponent } from './pages/chat/chat.component'; 
 import { EntretienManagementComponent } from './pages/entretien-management/entretien-management.component'; // Importation du EntretienManagementComponent
 import { FeedbackListComponent } from './pages/feedback-list/feedback-list.component';
+import { DocumentManagementComponent } from './pages/document-management/document-management.component';
+
 
 const routes: Routes = [
   {
@@ -65,6 +67,14 @@ const routes: Routes = [
       }
     ]
   },
+
+  {
+    path: 'document-management',
+    component: DocumentManagementComponent, // Nouvelle route pour DocumentManagementComponent
+  },
+
+  
+
   {
     path: '',
     component: AuthLayoutComponent,

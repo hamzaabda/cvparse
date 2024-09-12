@@ -12,6 +12,7 @@ export class IconsComponent implements OnInit {
   public copy: string;
   public offresEmploi: any[]; 
   public nouvelleOffreEmploi: any = {};
+  public showForm: boolean = false;
 
   constructor(private authService: AuthService) { }
 
@@ -73,5 +74,9 @@ export class IconsComponent implements OnInit {
 
   reloadPage() {
     window.location.reload();
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
   }
 }
