@@ -60,6 +60,7 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/admin/userCount/**").hasRole("ADMIN");
                     auth.requestMatchers("/user/**").hasAnyRole("ADMIN", "USER");
                     auth.requestMatchers("/chat/**").permitAll(); // Autoriser l'accès aux WebSockets
+
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
