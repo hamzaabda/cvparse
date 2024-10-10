@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13.1-alpine
+          env:
+            - name: POSTGRES_USER
+              value: "compose-postgres"
+            - name: POSTGRES_PASSWORD
+              value: "compose-postgres"
+            - name: POSTGRES_DB
+              value: "compose-postgres"
+          ports:
+            - containerPort: 5432   # Le port PostgreSQL interne
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432         # Port du service pour accéder à PostgreSQL dans le cluster
+      targetPort: 5432   # Correspond au port interne du conteneur
+  type: ClusterIP

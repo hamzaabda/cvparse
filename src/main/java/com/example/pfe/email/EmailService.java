@@ -190,7 +190,38 @@ public class EmailService {
         sendEmail(recipientEmail, subject, body);
     }
 
+    public void sendInterviewRescheduledEmail(String recipientEmail, LocalDateTime newDateHeure) throws MessagingException {
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+            message.setSubject("Modification de la date et de l'heure de l'entretien");
 
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+            String formattedDate = newDateHeure.format(dateFormatter);
+            String formattedTime = newDateHeure.format(timeFormatter);
+
+            String body = String.format(
+                    "Bonjour,\n\n" +
+                            "Nous souhaitons vous informer que la date et l'heure de votre entretien ont été modifiées.\n\n" +
+                            "Nouvelle date : %s\n" +
+                            "Nouvelle heure : %s\n\n" +
+                            "Veuillez confirmer votre disponibilité pour ce nouveau créneau.\n\n" +
+                            "Merci de votre compréhension.\n\n" +
+                            "Cordialement,\n" +
+                            "L'équipe de recrutement",
+                    formattedDate, formattedTime
+            );
+
+            message.setText(body);
+            Transport.send(message);
+            logger.info("E-mail de notification de modification d'entretien envoyé avec succès à " + recipientEmail);
+        } catch (MessagingException e) {
+            logger.error("Erreur lors de l'envoi de l'email de modification d'entretien : ", e);
+            throw e;
+        }
+    }
     private void sendEmail(String recipientEmail, String subject, String body) {
         try {
             MimeMessage message = new MimeMessage(session);

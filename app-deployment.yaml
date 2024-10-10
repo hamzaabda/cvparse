@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-app
+  template:
+    metadata:
+      labels:
+        app: spring-boot-app
+    spec:
+      containers:
+        - name: app
+          image: hamzaabda/cvparse
+          ports:
+            - containerPort: 8080   # Le port interne du conteneur reste 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres-service:5432/compose-postgres"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "compose-postgres"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "compose-postgres"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  selector:
+    app: spring-boot-app
+  ports:
+    - protocol: TCP
+      port: 80            # Le port du service exposé pour Kubernetes
+      targetPort: 8080     # Correspond au port interne du conteneur
+      nodePort: 30090      # Le port exposé sur l'hôte (accès via localhost:30090)
+  type: NodePort

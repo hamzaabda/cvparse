@@ -16,6 +16,12 @@ public class BlogPostController {
     @Autowired
     private BlogPostService blogPostService;
 
+
+    @PostMapping
+    public BlogPost createBlogPost(@RequestBody BlogPost blogPost) {
+        return blogPostService.createOrUpdateBlogPost(blogPost);
+    }
+
     @GetMapping
     public List<BlogPost> getAllBlogPosts() {
         return blogPostService.getAllBlogPosts();
@@ -28,10 +34,7 @@ public class BlogPostController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public BlogPost createBlogPost(@RequestBody BlogPost blogPost) {
-        return blogPostService.createOrUpdateBlogPost(blogPost);
-    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<BlogPost> updateBlogPost(@PathVariable Long id, @RequestBody BlogPost blogPost) {
